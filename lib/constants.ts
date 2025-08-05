@@ -29,12 +29,13 @@ export const SUBCATEGORIES: Record<string, string[]> = {
   Other: ['Miscellaneous']
 }
 
-// Safe spots coordinates (Berkeley campus)
+// Safe meeting spots (text only)
 export const SAFE_SPOTS = [
-  { name: 'Sproul Plaza', lat: 37.8697, lng: -122.2584 },
-  { name: 'Golden Bear Café', lat: 37.8704, lng: -122.2595 },
-  { name: 'Moffitt Library Steps', lat: 37.8723, lng: -122.2598 },
-  { name: 'MLK Student Union Lobby', lat: 37.8697, lng: -122.2607 }
+  'Sproul Plaza',
+  'Golden Bear Café', 
+  'Moffitt Library Steps',
+  'MLK Student Union Lobby',
+  'Any well-lit public area on campus'
 ]
 
 // Premium features pricing (for future implementation)

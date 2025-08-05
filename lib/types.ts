@@ -79,12 +79,8 @@ export interface Rating {
   createdAt: Timestamp
 }
 
-// Safe spot types
-export interface SafeSpot {
-  name: string
-  lat: number
-  lng: number
-}
+// Safe spot types (simplified)
+export type SafeSpot = string
 
 // Premium feature types
 export interface Boost {

@@ -357,8 +357,8 @@ export default function ListingDetailPage() {
               <div>
                 <h4 className="font-medium text-blue-900 mb-1">Meet Safely</h4>
                 <p className="text-sm text-blue-800">
-                  Always meet in public spaces. Consider using designated safe spots on campus 
-                  like Sproul Plaza or the MLK Student Union.
+                  Always meet in public spaces like Sproul Plaza, MLK Student Union, 
+                  or other well-lit areas on campus.
                 </p>
               </div>
             </div>

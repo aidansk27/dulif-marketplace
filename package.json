@@ -20,7 +20,7 @@
     "framer-motion": "^10.16.16",
     "@heroicons/react": "^2.0.18",
     "js-cookie": "^3.0.5",
-    "@googlemaps/js-api-loader": "^1.16.2",
+
     "canvas-confetti": "^1.9.2"
   },
   "devDependencies": {

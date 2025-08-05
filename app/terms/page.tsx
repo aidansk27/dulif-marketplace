@@ -51,7 +51,7 @@ export default function TermsPage() {
             <ul className="list-disc list-inside mb-4 space-y-1">
               <li>Provide accurate and truthful information in listings</li>
               <li>Treat all community members with respect</li>
-              <li>Meet in safe, public locations (preferably designated safe spots)</li>
+              <li>Meet in safe, public locations on campus</li>
               <li>Honor all agreed-upon transactions</li>
               <li>Report suspicious or fraudulent activity</li>
             </ul>
@@ -70,7 +70,6 @@ export default function TermsPage() {
             <p className="mb-2">For your safety:</p>
             <ul className="list-disc list-inside mb-4 space-y-1">
               <li>Always meet in public, well-lit areas</li>
-              <li>Use designated safe spots when possible</li>
               <li>Bring a friend when meeting strangers</li>
               <li>Trust your instincts - if something feels wrong, walk away</li>
               <li>Inspect items thoroughly before purchasing</li>
