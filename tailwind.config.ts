@@ -15,7 +15,7 @@ const config: Config = {
         foreground: '#1E1E1E',
       },
       fontFamily: {
-        sans: ['Aeonik', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Aeonik', 'Inter', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         normal: '400',

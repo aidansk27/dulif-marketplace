@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import { Inter } from 'next/font/google';
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-inter'
+});
 
 export const metadata: Metadata = {
   title: "DULIF Marketplace - Berkeley Student Marketplace",
@@ -24,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className={`${inter.variable} antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
