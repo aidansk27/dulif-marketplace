@@ -1,7 +1,28 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      }
+    ],
+  },
+  // Enable SWC minification for better performance
+  swcMinify: true,
+  // Enable experimental features for better performance
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;
