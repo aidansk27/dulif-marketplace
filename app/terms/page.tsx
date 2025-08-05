@@ -15,11 +15,11 @@ export default function TermsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center mb-6 text-white/80 hover:text-white">
             <Image
-              src="/transdulif.svg"
-              alt="DULIF"
+              src="/dulif-logo.png"
+              alt="dulif™"
               width={120}
               height={32}
-              className="h-8 w-auto mr-4 brightness-0 invert"
+              className="h-8 w-auto mr-4"
             />
           </Link>
           <h1 className="text-3xl font-bold">Terms of Service & Privacy Policy</h1>

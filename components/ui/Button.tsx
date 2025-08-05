@@ -17,13 +17,13 @@ export const Button = ({
   className = '',
   ...props
 }: ButtonProps) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0'
   
   const variantClasses = {
-    primary: 'bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg',
-    secondary: 'bg-secondary text-white hover:bg-secondary/90 shadow-md hover:shadow-lg',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
-    ghost: 'text-primary hover:bg-primary/10'
+    primary: 'bg-primary text-white hover:bg-primary-600 shadow-primary btn-primary',
+    secondary: 'bg-secondary text-primary hover:bg-secondary-600 shadow-secondary',
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white hover:border-primary-600',
+    ghost: 'text-primary hover:bg-primary-50 hover:text-primary-700'
   }
   
   const sizeClasses = {

@@ -124,21 +124,21 @@ export default function ProfileSetupPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-8 backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
             <Image
-              src="/transdulif.svg"
-              alt="DULIF"
+              src="/dulif-logo.png"
+              alt="dulif™"
               width={120}
               height={40}
               className="mx-auto mb-4"
             />
-            <h1 className="text-2xl font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-3 tracking-tight">
               Complete Your Profile
             </h1>
-            <p className="text-gray-600">
-              Let's get you set up on DULIF
+            <p className="text-muted text-base">
+              Let's get you set up on dulif™
             </p>
           </div>
 
