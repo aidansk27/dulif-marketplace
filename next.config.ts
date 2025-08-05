@@ -17,8 +17,6 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  // Enable SWC minification for better performance
-  swcMinify: true,
   // Enable experimental features for better performance
   experimental: {
     optimizeCss: true,
