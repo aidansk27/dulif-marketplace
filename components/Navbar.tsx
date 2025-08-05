@@ -56,13 +56,14 @@ export const Navbar = ({ user }: NavbarProps) => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center justify-start group">
-              <Image
-                src="/dulif-logo.svg"
-                alt="dulif™"
-                width={120}
-                height={32}
-                className="h-8 w-auto transition-transform duration-200 group-hover:scale-105"
-              />
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg">
+                  <span className="text-white font-bold text-lg">D</span>
+                </div>
+                <span className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  dulif™
+                </span>
+              </div>
             </Link>
           </div>
 

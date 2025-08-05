@@ -108,14 +108,14 @@ export default function SignupPage() {
           <div className="berkeley-card rounded-3xl p-10 berkeley-glow relative z-20">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="flex items-center justify-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-xl">
-                  <span className="text-white font-bold text-xl">D</span>
-                </div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary-600 to-secondary bg-clip-text text-transparent tracking-tight">
-                  dulif™
-                </h1>
+                          <div className="flex flex-col items-center justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-2xl mb-4">
+                <span className="text-white font-bold text-3xl">D</span>
               </div>
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary-600 to-secondary bg-clip-text text-transparent tracking-tight text-center">
+                dulif™
+              </h1>
+            </div>
               <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
                 Welcome to Berkeley's Marketplace
               </h2>

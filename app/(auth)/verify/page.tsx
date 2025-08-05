@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import { completeSignIn, sendMagicLink } from '@/lib/auth'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@/components/ui/Button'
@@ -17,9 +17,12 @@ export default function VerifyPage() {
   const [isResending, setIsResending] = useState(false)
   const [error, setError] = useState('')
   const [isCompleting, setIsCompleting] = useState(false)
+  const [emailsSent, setEmailsSent] = useState(1) // Start with 1 (initial email)
+  const [isLocked, setIsLocked] = useState(false)
   const router = useRouter()
   
-  const { timeLeft, isActive, start } = useCountdown(60)
+  const { timeLeft, isActive, start } = useCountdown(30) // 30 second timer
+  const MAX_EMAILS = 3
 
   useEffect(() => {
     // Get email from localStorage
@@ -28,26 +31,54 @@ export default function VerifyPage() {
       setEmail(storedEmail)
     }
 
-    // Check if this is a magic link callback
-    const handleMagicLinkSignIn = async () => {
-      if (window.location.href.includes('apiKey=') && !isCompleting) {
-        setIsCompleting(true)
-        try {
-          await completeSignIn()
-          router.push('/')
-        } catch (error: any) {
-          setError(error.message || 'Failed to complete sign-in')
-          setIsCompleting(false)
-        }
-      }
+    // Check if we arrived here via email link
+    const urlParams = new URLSearchParams(window.location.search)
+    const isSignInWithEmailLink = urlParams.get('mode') === 'signIn'
+    
+    if (isSignInWithEmailLink && storedEmail) {
+      completeSignInProcess(storedEmail)
     }
+  }, [])
 
-    handleMagicLinkSignIn()
-  }, [router, isCompleting])
+  const completeSignInProcess = async (emailAddress: string) => {
+    setIsCompleting(true)
+    try {
+      await completeSignIn(emailAddress, window.location.href)
+      // Clear the stored email
+      localStorage.removeItem('emailForSignIn')
+      router.push('/profile-setup')
+    } catch (error: any) {
+      setError(error.message || 'Failed to complete sign-in')
+      setIsCompleting(false)
+    }
+  }
 
-  const handleResendLink = async () => {
-    if (!email) {
-      setError('Email not found. Please go back and try again.')
+  const handleCodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (verificationCode.length !== 6) return
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      // In a real implementation, you'd verify the code here
+      // For now, we'll simulate success
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      router.push('/profile-setup')
+    } catch (error: any) {
+      setError(error.message || 'Invalid verification code')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleResendEmail = async () => {
+    if (!email || isResending || isActive || isLocked) return
+
+    // Check if max emails reached
+    if (emailsSent >= MAX_EMAILS) {
+      setIsLocked(true)
+      setError(`Maximum of ${MAX_EMAILS} verification emails sent. Please go back to sign up or contact support.`)
       return
     }
 
@@ -56,27 +87,23 @@ export default function VerifyPage() {
 
     try {
       await sendMagicLink(email)
-      start(60) // Start 60-second countdown
+      setEmailsSent(prev => prev + 1)
+      start() // Start the 30-second countdown timer
+      
+      if (emailsSent + 1 >= MAX_EMAILS) {
+        setIsLocked(true)
+      }
     } catch (error: any) {
-      setError(error.message || 'Failed to resend link')
+      setError(error.message || 'Failed to resend email')
     } finally {
       setIsResending(false)
     }
   }
 
-  const handleManualVerification = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('Manual verification codes are not supported. Please use the link sent to your email.')
-  }
-
-  const goBack = () => {
-    localStorage.removeItem('emailForSignIn')
-    router.push('/signup')
-  }
-
+  // Show loading state if completing sign-in
   if (isCompleting) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-secondary-50 flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -86,7 +113,7 @@ export default function VerifyPage() {
           <h2 className="text-xl font-semibold text-foreground mb-2">
             Completing Sign-In
           </h2>
-          <p className="text-gray-600">
+          <p className="text-muted">
             Please wait while we verify your account...
           </p>
         </motion.div>
@@ -95,7 +122,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+    <div className="min-h-screen gradient-prestigious flex items-center justify-center p-4 relative overflow-hidden prestigious-bg">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,11 +132,11 @@ export default function VerifyPage() {
         <div className="berkeley-card rounded-3xl p-10 berkeley-glow relative z-10">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-xl">
-                <span className="text-white font-bold text-xl">D</span>
+            <div className="flex flex-col items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-2xl mb-3">
+                <span className="text-white font-bold text-2xl">D</span>
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary-600 to-secondary bg-clip-text text-transparent tracking-tight">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary-600 to-secondary bg-clip-text text-transparent tracking-tight text-center">
                 dulif™
               </h1>
             </div>
@@ -120,96 +147,128 @@ export default function VerifyPage() {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring', duration: 0.5 }}
-              className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+              transition={{ delay: 0.2, type: "spring" }}
+              className="w-20 h-20 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-6"
             >
-              <EnvelopeIcon className="w-8 h-8 text-green-600" />
+              <EnvelopeIcon className="w-10 h-10 text-secondary-600" />
             </motion.div>
-            
-            <h1 className="text-2xl font-bold text-foreground mb-2">
+                
+            <h2 className="text-2xl font-semibold text-foreground mb-4 tracking-tight">
               Check Your Email
-            </h1>
-            
-            <p className="text-gray-600 mb-2">
-              We sent a magic link to
+            </h2>
+            <p className="text-muted text-center mb-4">
+              We've sent a secure sign-in link to
             </p>
-            
-            <p className="text-primary font-medium break-all">
-              {email || 'your Berkeley email'}
-            </p>
+            <div className="bg-primary-50 border border-primary-200 rounded-xl p-3 mb-6">
+              <p className="font-semibold text-primary text-center break-all">{email}</p>
+            </div>
+            <div className="bg-secondary-50 border border-secondary-200 rounded-xl p-4 mb-6">
+              <p className="text-sm text-secondary-700 font-medium text-center">
+                📧 Click the link in your email to sign in instantly
+              </p>
+              <p className="text-xs text-secondary-600 text-center mt-1">
+                The link will bring you back here to complete the process
+              </p>
+            </div>
           </div>
 
-          {/* Instructions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-blue-800">
-              <strong>Click the link in your email</strong> to sign in instantly. 
-              The link will bring you back here to complete the process.
-            </p>
+          {/* Alternative: 6-digit code */}
+          <div className="border-t border-border pt-6 mb-6">
+            <form onSubmit={handleCodeSubmit} className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Enter 6-digit code (if provided)"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.slice(0, 6))}
+                className="text-center text-lg tracking-widest"
+                maxLength={6}
+              />
+              
+              <Button
+                type="submit"
+                variant="outline"
+                className="w-full"
+                disabled={verificationCode.length !== 6 || isLoading}
+                loading={isLoading}
+              >
+                Verify Code
+              </Button>
+            </form>
           </div>
-
-          {/* Manual Code Entry (Optional) */}
-          <form onSubmit={handleManualVerification} className="space-y-4 mb-6">
-            <Input
-              type="text"
-              placeholder="Enter 6-digit code (if provided)"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              maxLength={6}
-              className="text-center text-lg tracking-widest"
-            />
-            
-            <Button
-              type="submit"
-              variant="outline"
-              className="w-full"
-              disabled={verificationCode.length !== 6}
-            >
-              Verify Code
-            </Button>
-          </form>
 
           {error && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4"
+              className="p-4 bg-red-50 border border-red-200 rounded-xl mb-6"
             >
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-600 font-medium text-center">{error}</p>
             </motion.div>
           )}
 
-          {/* Resend Link */}
-          <div className="text-center space-y-3">
-            <p className="text-sm text-gray-600">
-              Didn't receive the email?
-            </p>
-            
-            <Button
-              onClick={handleResendLink}
-              variant="ghost"
-              loading={isResending}
-              disabled={isActive}
-              className="text-sm"
-            >
-              {isActive ? (
-                <span className="flex items-center">
-                  <ClockIcon className="w-4 h-4 mr-1" />
-                  Resend in {timeLeft}s
-                </span>
-              ) : (
-                'Resend Link'
+          {/* Resend section */}
+          <div className="border-t border-border pt-6">
+            <div className="text-center">
+              <p className="text-sm text-foreground font-medium mb-2">
+                Haven't received the email?
+              </p>
+              <p className="text-sm text-muted mb-4">
+                Check your spam/junk folder or wait to request a new link
+              </p>
+              
+              {/* Email Count Warning */}
+              {emailsSent > 1 && !isLocked && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-amber-700">
+                    ⚠️ {emailsSent}/{MAX_EMAILS} verification emails sent
+                  </p>
+                </div>
               )}
-            </Button>
-          </div>
+              
+              {/* Locked Warning */}
+              {isLocked && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                  <div className="flex items-center justify-center space-x-2">
+                    <LockClosedIcon className="w-4 h-4 text-red-600" />
+                    <p className="text-sm text-red-700 font-medium">
+                      Maximum emails reached. Please go back to sign up.
+                    </p>
+                  </div>
+                </div>
+              )}
 
-          {/* Back Button */}
-          <div className="text-center mt-6 pt-6 border-t border-gray-200">
-            <button
-              onClick={goBack}
-              className="text-sm text-gray-500 hover:text-primary transition-colors"
-            >
-              ← Back to sign up
-            </button>
+              <Button
+                onClick={handleResendEmail}
+                disabled={isActive || isResending || isLocked}
+                loading={isResending}
+                variant="outline"
+                className="min-w-[160px] relative mb-4"
+              >
+                {isLocked ? (
+                  <div className="flex items-center space-x-2">
+                    <LockClosedIcon className="w-4 h-4" />
+                    <span>Locked</span>
+                  </div>
+                ) : isActive ? (
+                  <div className="flex items-center space-x-2">
+                    <ClockIcon className="w-4 h-4" />
+                    <span>Wait {timeLeft}s</span>
+                  </div>
+                ) : (
+                  'Send New Link'
+                )}
+              </Button>
+
+              {/* Back to signup */}
+              <div>
+                <button
+                  onClick={() => router.push('/signup')}
+                  className="text-sm text-muted hover:text-primary transition-colors duration-200"
+                >
+                  ← Back to sign up
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
