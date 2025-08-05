@@ -2,68 +2,51 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { EnvelopeIcon, ClockIcon, LockClosedIcon } from '@heroicons/react/24/outline'
-import { completeSignIn, sendMagicLink } from '@/lib/auth'
+import { verifyEmailCode, createAccount, sendVerificationCode } from '@/lib/auth'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { VerificationInput } from '@/components/VerificationInput'
 
 export default function VerifyPage() {
   const [email, setEmail] = useState('')
-  const [verificationCode, setVerificationCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [error, setError] = useState('')
-  const [isCompleting, setIsCompleting] = useState(false)
-  const [emailsSent, setEmailsSent] = useState(1) // Start with 1 (initial email)
+  const [emailsSent, setEmailsSent] = useState(1)
   const [isLocked, setIsLocked] = useState(false)
   const router = useRouter()
   
-  const { timeLeft, isActive, start } = useCountdown(30) // 30 second timer
+  const { timeLeft, isActive, start } = useCountdown(30)
   const MAX_EMAILS = 3
 
   useEffect(() => {
-    // Get email from localStorage
-    const storedEmail = localStorage.getItem('emailForSignIn')
+    const storedEmail = localStorage.getItem('emailForVerification')
     if (storedEmail) {
       setEmail(storedEmail)
+    } else {
+      router.push('/signup')
     }
+  }, [router])
 
-    // Check if we arrived here via email link
-    const urlParams = new URLSearchParams(window.location.search)
-    const isSignInWithEmailLink = urlParams.get('mode') === 'signIn'
+  const handleCodeComplete = async (code: string) => {
+    if (!email) return
     
-    if (isSignInWithEmailLink && storedEmail) {
-      completeSignInProcess(storedEmail)
-    }
-  }, [])
-
-  const completeSignInProcess = async (emailAddress: string) => {
-    setIsCompleting(true)
-    try {
-      await completeSignIn(emailAddress, window.location.href)
-      // Clear the stored email
-      localStorage.removeItem('emailForSignIn')
-      router.push('/profile-setup')
-    } catch (error: any) {
-      setError(error.message || 'Failed to complete sign-in')
-      setIsCompleting(false)
-    }
-  }
-
-  const handleCodeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (verificationCode.length !== 6) return
-
     setIsLoading(true)
     setError('')
 
     try {
-      // In a real implementation, you'd verify the code here
-      // For now, we'll simulate success
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Verify the code
+      await verifyEmailCode(email, code)
+      
+      // Create account
+      await createAccount(email)
+      
+      // Clear stored email
+      localStorage.removeItem('emailForVerification')
+      
+      // Redirect to profile setup
       router.push('/profile-setup')
     } catch (error: any) {
       setError(error.message || 'Invalid verification code')
@@ -72,13 +55,12 @@ export default function VerifyPage() {
     }
   }
 
-  const handleResendEmail = async () => {
+  const handleResendCode = async () => {
     if (!email || isResending || isActive || isLocked) return
 
-    // Check if max emails reached
     if (emailsSent >= MAX_EMAILS) {
       setIsLocked(true)
-      setError(`Maximum of ${MAX_EMAILS} verification emails sent. Please go back to sign up or contact support.`)
+      setError(`Maximum of ${MAX_EMAILS} verification codes sent. Please go back to sign up.`)
       return
     }
 
@@ -86,39 +68,18 @@ export default function VerifyPage() {
     setError('')
 
     try {
-      await sendMagicLink(email)
+      await sendVerificationCode(email)
       setEmailsSent(prev => prev + 1)
-      start() // Start the 30-second countdown timer
+      start()
       
       if (emailsSent + 1 >= MAX_EMAILS) {
         setIsLocked(true)
       }
     } catch (error: any) {
-      setError(error.message || 'Failed to resend email')
+      setError(error.message || 'Failed to resend verification code')
     } finally {
       setIsResending(false)
     }
-  }
-
-  // Show loading state if completing sign-in
-  if (isCompleting) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-secondary-50 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center"
-        >
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-foreground mb-2">
-            Completing Sign-In
-          </h2>
-          <p className="text-muted">
-            Please wait while we verify your account...
-          </p>
-        </motion.div>
-      </div>
-    )
   }
 
   return (
@@ -142,7 +103,7 @@ export default function VerifyPage() {
             </div>
           </div>
 
-          {/* Success Message */}
+          {/* Header */}
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
@@ -154,62 +115,47 @@ export default function VerifyPage() {
             </motion.div>
                 
             <h2 className="text-2xl font-semibold text-foreground mb-4 tracking-tight">
-              Check Your Email
+              Enter Verification Code
             </h2>
             <p className="text-muted text-center mb-4">
-              We've sent a secure sign-in link to
+              We've sent a 6-digit code to
             </p>
             <div className="bg-primary-50 border border-primary-200 rounded-xl p-3 mb-6">
               <p className="font-semibold text-primary text-center break-all">{email}</p>
             </div>
-            <div className="bg-secondary-50 border border-secondary-200 rounded-xl p-4 mb-6">
-              <p className="text-sm text-secondary-700 font-medium text-center">
-                📧 Click "Sign in to dulif-a3324" button in your email
-              </p>
-              <p className="text-xs text-secondary-600 text-center mt-1">
-                ⚠️ Check your spam folder if you don't see the email
-              </p>
-            </div>
           </div>
 
-          {/* Email Instructions */}
-          <div className="border-t border-border pt-6 mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">📧 How to sign in:</h3>
-              <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Check your email (including spam folder)</li>
-                <li>2. Look for "Sign in to dulif-a3324" button</li>
-                <li>3. Click the button to sign in instantly</li>
-                <li>4. You'll be redirected back here automatically</li>
-              </ol>
-            </div>
+          {/* Verification Input */}
+          <div className="mb-8">
+            <VerificationInput
+              length={6}
+              onComplete={handleCodeComplete}
+              isLoading={isLoading}
+              error={error}
+            />
           </div>
 
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-4 bg-red-50 border border-red-200 rounded-xl mb-6"
-            >
-              <p className="text-sm text-red-600 font-medium text-center">{error}</p>
-            </motion.div>
+          {/* Development Mode Alert */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+              <p className="text-sm text-blue-700 font-medium text-center">
+                🛠️ Development Mode: Code will appear in browser alert
+              </p>
+            </div>
           )}
 
           {/* Resend section */}
           <div className="border-t border-border pt-6">
             <div className="text-center">
               <p className="text-sm text-foreground font-medium mb-2">
-                Haven't received the email?
-              </p>
-              <p className="text-sm text-muted mb-4">
-                Check your spam/junk folder or wait to request a new link
+                Didn't receive the code?
               </p>
               
               {/* Email Count Warning */}
               {emailsSent > 1 && !isLocked && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
                   <p className="text-sm text-amber-700">
-                    ⚠️ {emailsSent}/{MAX_EMAILS} verification emails sent
+                    ⚠️ {emailsSent}/{MAX_EMAILS} verification codes sent
                   </p>
                 </div>
               )}
@@ -220,14 +166,14 @@ export default function VerifyPage() {
                   <div className="flex items-center justify-center space-x-2">
                     <LockClosedIcon className="w-4 h-4 text-red-600" />
                     <p className="text-sm text-red-700 font-medium">
-                      Maximum emails reached. Please go back to sign up.
+                      Maximum codes reached. Please go back to sign up.
                     </p>
                   </div>
                 </div>
               )}
 
               <Button
-                onClick={handleResendEmail}
+                onClick={handleResendCode}
                 disabled={isActive || isResending || isLocked}
                 loading={isResending}
                 variant="outline"
@@ -244,7 +190,7 @@ export default function VerifyPage() {
                     <span>Wait {timeLeft}s</span>
                   </div>
                 ) : (
-                  'Send New Link'
+                  'Send New Code'
                 )}
               </Button>
 

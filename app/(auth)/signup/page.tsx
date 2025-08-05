@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { sendMagicLink } from '@/lib/auth'
+import { sendVerificationCode } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
 import { useTypingAnimation } from '@/hooks/useTypingAnimation'
@@ -51,10 +51,10 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      await sendMagicLink(email)
+      await sendVerificationCode(email)
       router.push('/verify')
     } catch (error: any) {
-      setError(error.message || 'Failed to send sign-in link')
+      setError(error.message || 'Failed to send verification code')
     } finally {
       setIsLoading(false)
     }
@@ -210,7 +210,7 @@ export default function SignupPage() {
                 className="w-full text-lg py-4 font-semibold"
                 size="lg"
               >
-                {isLoading ? 'Sending Sign-In Link...' : 'Send Sign-In Link'}
+                {isLoading ? 'Sending Code...' : 'Send Verification Code'}
               </Button>
             </form>
 
