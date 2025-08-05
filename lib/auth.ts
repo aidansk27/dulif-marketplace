@@ -26,8 +26,17 @@ export const sendMagicLink = async (email: string): Promise<void> => {
   }
 
   const actionCodeSettings: ActionCodeSettings = {
-    url: 'https://dulif.com/verify',
+    url: process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:3000/verify' 
+      : 'https://dulif.com/verify',
     handleCodeInApp: true,
+    iOS: {
+      bundleId: 'com.dulif.marketplace'
+    },
+    android: {
+      packageName: 'com.dulif.marketplace'
+    },
+    dynamicLinkDomain: 'dulif.page.link'
   }
 
   try {

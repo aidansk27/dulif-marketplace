@@ -164,36 +164,25 @@ export default function VerifyPage() {
             </div>
             <div className="bg-secondary-50 border border-secondary-200 rounded-xl p-4 mb-6">
               <p className="text-sm text-secondary-700 font-medium text-center">
-                📧 Click the link in your email to sign in instantly
+                📧 Click "Sign in to dulif-a3324" button in your email
               </p>
               <p className="text-xs text-secondary-600 text-center mt-1">
-                The link will bring you back here to complete the process
+                ⚠️ Check your spam folder if you don't see the email
               </p>
             </div>
           </div>
 
-          {/* Alternative: 6-digit code */}
+          {/* Email Instructions */}
           <div className="border-t border-border pt-6 mb-6">
-            <form onSubmit={handleCodeSubmit} className="space-y-4">
-              <Input
-                type="text"
-                placeholder="Enter 6-digit code (if provided)"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value.slice(0, 6))}
-                className="text-center text-lg tracking-widest"
-                maxLength={6}
-              />
-              
-              <Button
-                type="submit"
-                variant="outline"
-                className="w-full"
-                disabled={verificationCode.length !== 6 || isLoading}
-                loading={isLoading}
-              >
-                Verify Code
-              </Button>
-            </form>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <h3 className="font-semibold text-blue-900 mb-2">📧 How to sign in:</h3>
+              <ol className="text-sm text-blue-800 space-y-1">
+                <li>1. Check your email (including spam folder)</li>
+                <li>2. Look for "Sign in to dulif-a3324" button</li>
+                <li>3. Click the button to sign in instantly</li>
+                <li>4. You'll be redirected back here automatically</li>
+              </ol>
+            </div>
           </div>
 
           {error && (
