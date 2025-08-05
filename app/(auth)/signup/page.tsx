@@ -6,8 +6,6 @@ import { sendMagicLink } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
 import { useTypingAnimation } from '@/hooks/useTypingAnimation'
-import Image from 'next/image'
-import { Input } from '@/components/ui/Input'
 import Link from 'next/link'
 
 const BERKELEY_EMAIL_DOMAIN = 'berkeley.edu'
@@ -31,13 +29,12 @@ export default function SignupPage() {
   const email = netId ? `${netId}@${BERKELEY_EMAIL_DOMAIN}` : ''
 
   // Animated placeholder for email input
-  const animatedPlaceholder = useTypingAnimation([
-    'arodgers12',
-    'mlynch24', 
-    'jkidd4',
-    'amorgan76',
-    'barbaralee17'
-  ], 2000)
+  const animatedPlaceholder = useTypingAnimation({
+    words: ['arodgers12', 'mlynch24', 'jkidd4', 'amorgan76', 'barbaralee17'],
+    typeSpeed: 100,
+    deleteSpeed: 50,
+    delayBetweenWords: 2000,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
