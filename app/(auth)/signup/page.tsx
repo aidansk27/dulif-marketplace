@@ -12,12 +12,14 @@ const BERKELEY_EMAIL_DOMAIN = 'berkeley.edu'
 
 // Mock listings for background preview
 const mockListings = [
-  { id: '1', title: 'MacBook Pro 16" M2', price: 2800, image: '/images/mock-macbook.jpg', category: 'Electronics' },
-  { id: '2', title: 'Berkeley Dorm Furniture Set', price: 450, image: '/images/mock-furniture.jpg', category: 'Furniture' },
-  { id: '3', title: 'Chemistry Textbook Bundle', price: 120, image: '/images/mock-books.jpg', category: 'Books' },
-  { id: '4', title: 'Gaming Setup - Monitor & Keyboard', price: 680, image: '/images/mock-gaming.jpg', category: 'Electronics' },
-  { id: '5', title: 'Physics Lab Equipment', price: 95, image: '/images/mock-lab.jpg', category: 'Academic' },
-  { id: '6', title: 'Study Desk & Chair', price: 200, image: '/images/mock-desk.jpg', category: 'Furniture' },
+  { id: '1', title: 'MacBook Pro M2 16" (Excellent)', price: 2400, seller: 'Sarah M.', rating: 4.9, category: 'Electronics', urgent: true },
+  { id: '2', title: 'Organic Chemistry Textbook', price: 85, seller: 'Mike K.', rating: 4.8, category: 'Textbooks', urgent: false },
+  { id: '3', title: 'IKEA Desk + Chair Set', price: 180, seller: 'Jessica L.', rating: 5.0, category: 'Furniture', urgent: false },
+  { id: '4', title: 'iPad Air + Apple Pencil', price: 450, seller: 'David R.', rating: 4.7, category: 'Electronics', urgent: true },
+  { id: '5', title: 'Physics 7A Lab Kit', price: 65, seller: 'Amy Z.', rating: 4.9, category: 'Academic', urgent: false },
+  { id: '6', title: 'Mini Fridge (Dorm Size)', price: 120, seller: 'Tom B.', rating: 4.6, category: 'Appliances', urgent: false },
+  { id: '7', title: 'Calculus Early Transcendentals', price: 75, seller: 'Lisa P.', rating: 4.8, category: 'Textbooks', urgent: false },
+  { id: '8', title: 'Gaming Monitor 27" 144Hz', price: 220, seller: 'Alex M.', rating: 4.9, category: 'Electronics', urgent: true },
 ]
 
 export default function SignupPage() {
@@ -60,35 +62,78 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Blurred Background with Mock Listings */}
-      <div className="absolute inset-0 gradient-prestigious">
-        <div className="absolute inset-0 prestigious-bg opacity-60"></div>
+      {/* Blurred Background with Mock Homepage */}
+      <div className="absolute inset-0 bg-background">
+        <div className="absolute inset-0 prestigious-bg opacity-40"></div>
         
-        {/* Mock Marketplace Background */}
-        <div className="absolute inset-0 blur-sm opacity-30 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 py-20">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mock Homepage Background */}
+        <div className="absolute inset-0 blur-sm opacity-40 overflow-hidden">
+          {/* Mock Navigation Bar */}
+          <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+              {/* Mock Logo */}
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-primary rounded-lg"></div>
+                <span className="text-xl font-bold text-primary">dulif™</span>
+              </div>
+              
+              {/* Mock Search Bar */}
+              <div className="flex-1 max-w-lg mx-8">
+                <div className="bg-gray-100 rounded-lg h-10 flex items-center px-4">
+                  <div className="w-4 h-4 bg-gray-400 rounded mr-3"></div>
+                  <div className="bg-gray-300 h-4 w-48 rounded"></div>
+                </div>
+              </div>
+              
+              {/* Mock Profile */}
+              <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Mock Category Tabs */}
+          <div className="bg-white border-b border-gray-200 px-4">
+            <div className="max-w-7xl mx-auto flex space-x-6 py-3">
+              {['All', 'Electronics', 'Textbooks', 'Furniture', 'Academic'].map((cat, i) => (
+                <div key={cat} className={`px-3 py-1 rounded-full text-sm ${i === 0 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}>
+                  {cat}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Mock Listings Grid */}
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {mockListings.map((listing, index) => (
                 <motion.div
                   key={listing.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="berkeley-card rounded-2xl p-4 h-80"
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl h-48 mb-4 flex items-center justify-center">
-                    <span className="text-gray-500 font-medium">{listing.category}</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2 truncate">{listing.title}</h3>
-                  <p className="text-2xl font-bold text-primary">${listing.price}</p>
-                  <div className="mt-2">
-                    <div className="flex items-center">
-                      <div className="flex space-x-1">
-                        {[1,2,3,4,5].map(star => (
-                          <div key={star} className="w-4 h-4 bg-secondary rounded-sm"></div>
-                        ))}
+                  {/* Mock Image */}
+                  <div className="bg-gradient-to-br from-gray-200 to-gray-300 h-40 flex items-center justify-center relative">
+                    <span className="text-gray-500 font-medium text-sm">{listing.category}</span>
+                    {listing.urgent && (
+                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                        URGENT
                       </div>
-                      <span className="ml-2 text-sm text-muted">(4.8)</span>
+                    )}
+                  </div>
+                  
+                  {/* Mock Content */}
+                  <div className="p-3">
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1 truncate">{listing.title}</h3>
+                    <p className="text-lg font-bold text-primary mb-2">${listing.price}</p>
+                    
+                    {/* Mock Seller Info */}
+                    <div className="flex items-center justify-between text-xs text-gray-600">
+                      <span>{listing.seller}</span>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-yellow-400 rounded mr-1"></div>
+                        <span>{listing.rating}</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
