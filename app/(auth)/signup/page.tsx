@@ -6,7 +6,7 @@ import { sendMagicLink } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
 import { useTypingAnimation } from '@/hooks/useTypingAnimation'
-import Link from 'next/link'
+import { TermsModal } from '@/components/TermsModal'
 
 const BERKELEY_EMAIL_DOMAIN = 'berkeley.edu'
 
@@ -24,6 +24,7 @@ export default function SignupPage() {
   const [netId, setNetId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showTermsModal, setShowTermsModal] = useState(false)
   const router = useRouter()
 
   const email = netId ? `${netId}@${BERKELEY_EMAIL_DOMAIN}` : ''
@@ -180,14 +181,23 @@ export default function SignupPage() {
               
               <p className="text-sm text-muted">
                 By continuing, you agree to our{' '}
-                <Link href="/terms" className="text-primary hover:underline font-semibold">
+                <button 
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-primary hover:underline font-semibold"
+                >
                   Terms of Service and Privacy Policy
-                </Link>
+                </button>
               </p>
             </div>
           </div>
         </motion.div>
       </div>
+
+      {/* Terms Modal */}
+      <TermsModal 
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
     </div>
   )
 }
