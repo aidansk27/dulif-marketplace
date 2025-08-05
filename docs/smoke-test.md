@@ -16,7 +16,7 @@ Complete these manual checks to verify the application is working correctly:
 ## Core Features
 - [ ] Listing wizard publishes card + confetti
 - [ ] Second user can chat & rate
-- [ ] Safe-spot Google Map renders pins
+- [ ] Safety recommendations display correctly
 
 ## PWA & Testing
 - [ ] PWA install prompt appears
