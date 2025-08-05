@@ -59,21 +59,22 @@ export default function SignupPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="bg-card rounded-2xl shadow-xl border border-border p-8 backdrop-blur-sm">
+        <div className="berkeley-card rounded-3xl p-10 berkeley-glow relative z-10">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Image
-              src="/dulif-logo.png"
-              alt="dulif™"
-              width={120}
-              height={40}
-              className="mx-auto mb-4"
-            />
-            <h1 className="text-3xl font-bold text-foreground mb-2 tracking-tight">
-              Welcome to dulif™
-            </h1>
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-xl">
+                <span className="text-white font-bold text-xl">D</span>
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary-600 to-secondary bg-clip-text text-transparent tracking-tight">
+                dulif™
+              </h1>
+            </div>
+            <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
+              Welcome to Berkeley's Marketplace
+            </h2>
             <p className="text-muted text-base">
-              The Berkeley Student Marketplace
+              The premier student marketplace for UC Berkeley
             </p>
           </div>
 
