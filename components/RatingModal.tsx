@@ -111,6 +111,7 @@ export const RatingModal = ({
           <div className="text-center">
             <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3">
               {seller.photoURL ? (
+                // TODO: Replace with next/image for better performance
                 <img
                   src={seller.photoURL}
                   alt={`${seller.firstName} ${seller.lastName}`}

@@ -339,6 +339,7 @@ export const CreateListingWizard = ({
                     animate={{ opacity: 1, scale: 1 }}
                     className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden"
                   >
+                    {/* TODO: Replace with next/image for better performance */}
                     <img
                       src={preview}
                       alt={`Preview ${index + 1}`}

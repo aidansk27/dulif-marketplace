@@ -97,6 +97,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
       <div className="bg-primary text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           {otherUser.photoURL ? (
+            // TODO: Replace with next/image for better performance
             <img
               src={otherUser.photoURL}
               alt={`${otherUser.firstName} ${otherUser.lastName}`}
@@ -153,6 +154,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
                   <div className="w-6 h-6 flex-shrink-0">
                     {showAvatar && !isOwnMessage && (
                       otherUser.photoURL ? (
+                        // TODO: Replace with next/image for better performance
                         <img
                           src={otherUser.photoURL}
                           alt={otherUser.firstName}

@@ -290,6 +290,7 @@ export default function ProfileSetupPage() {
               <div className="inline-block relative">
                 <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                   {avatarPreview ? (
+                    // TODO: Replace with next/image for better performance
                     <img
                       src={avatarPreview}
                       alt="Avatar preview"

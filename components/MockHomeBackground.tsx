@@ -114,11 +114,13 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
               {/* Logo - explicit SVG as requested */}
               <div className="flex items-center">
+                {/* TODO: Replace with next/image for better performance */}
                 <img src="/transdulif.svg" alt="dulif logo" className="w-12 h-12 object-contain" />
               </div>
 
               {/* Mock Profile */}
               <div className="w-8 h-8 rounded-full overflow-hidden">
+                {/* TODO: Replace with next/image for better performance */}
                 <img src="/prof.jpg" alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -153,6 +155,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
                     className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pointer-events-none"
                   >
                   <div className="relative h-40 w-full">
+                    {/* TODO: Replace with next/image for better performance */}
                     <img src={item.src} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
                     {(showTitles || showRatings) && (
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent text-white p-2 text-xs">
