@@ -88,7 +88,7 @@ dulif-marketplace/
 │   │   │   ├── page.tsx   # Email entry with animated placeholders
 │   │   │   └── password/  # Password creation with visibility toggle
 │   │   └── verify/        # Email verification flow
-│   ├── (protected)/       # Protected routes
+│   ├── protected/       # Protected routes
 │   │   ├── create/        # 6-step listing wizard
 │   │   ├── listing/[id]/  # Listing detail with chat
 │   │   └── profile-setup/ # First-time user setup
