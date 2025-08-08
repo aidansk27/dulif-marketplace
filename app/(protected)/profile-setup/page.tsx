@@ -126,7 +126,7 @@ export default function ProfileSetupPage() {
       await refreshUser()
 
       // Redirect to home
-      router.push('/')
+      window.location.href = '/'
     } catch (error: unknown) {
       console.error('Profile setup error:', error)
       const err = error as { message?: string }
