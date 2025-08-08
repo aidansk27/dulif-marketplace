@@ -55,7 +55,7 @@ export const Logo = ({
           {!imageError ? (
             <div className="relative flex items-center justify-center">
               <Image
-                src="/transdulif.svg"
+                src="/DULIFLOGOFAVICON.ico"
                 alt="dulif logo"
                 width={parseInt(sizes.container.split('w-')[1].split(' ')[0]) * 4}
                 height={parseInt(sizes.container.split('h-')[1]) * 4}
@@ -87,7 +87,7 @@ export const Logo = ({
         {!imageError ? (
           <div className="relative">
             <Image
-              src="/transdulif.svg"
+              src="/DULIFLOGOFAVICON.ico"
               alt="dulif logo"
               width={parseInt(sizes.container.split('w-')[1].split(' ')[0]) * 4}
               height={parseInt(sizes.container.split('h-')[1]) * 4}
@@ -113,7 +113,7 @@ export const Logo = ({
         {!imageError ? (
           <div className="relative flex items-center justify-center">
             <Image
-              src="/transdulif.svg"
+              src="/DULIFLOGOFAVICON.ico"
               alt="dulif logo"
               width={parseInt(sizes.container.split('w-')[1].split(' ')[0]) * 4}
               height={parseInt(sizes.container.split('h-')[1]) * 4}

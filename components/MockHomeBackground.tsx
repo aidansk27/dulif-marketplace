@@ -86,7 +86,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
               {/* Logo - explicit SVG as requested */}
               <div className="flex items-center">
-                <img src="/transdulif.svg" alt="dulif logo" className="w-12 h-12 object-contain" />
+                <img src="/DULIFLOGOFAVICON.ico" alt="dulif logo" className="w-12 h-12 object-contain" />
               </div>
 
               {/* Mock Profile */}
