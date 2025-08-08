@@ -26,7 +26,7 @@ export default function LoginPage() {
   const MotionDiv = motion.div as any
 
   const animatedPlaceholder = useTypingAnimation({
-    words: EMAIL_PLACEHOLDERS as any,
+    words: EMAIL_PLACEHOLDERS,
     typeSpeed: 100,
     deleteSpeed: 50,
     delayBetweenWords: 2000,
@@ -55,10 +55,11 @@ export default function LoginPage() {
         alert('Please verify your Berkeley email address via the link sent to you.')
       }
       router.push('/')
-    } catch (err: any) {
-      if (err.code === 'auth/wrong-password') setError('Incorrect password. Please try again.')
-      else if (err.code === 'auth/user-not-found') setError('No account found for that email. Sign up first.')
-      else if (err.code === 'auth/too-many-requests') setError('Too many failed attempts. Please wait and try again.')
+    } catch (err: unknown) {
+      const error = err as { code?: string }
+      if (error.code === 'auth/wrong-password') setError('Incorrect password. Please try again.')
+      else if (error.code === 'auth/user-not-found') setError('No account found for that email. Sign up first.')
+      else if (error.code === 'auth/too-many-requests') setError('Too many failed attempts. Please wait and try again.')
       else {
         console.error('Login error:', err)
         setError('Failed to log in. Please try again.')

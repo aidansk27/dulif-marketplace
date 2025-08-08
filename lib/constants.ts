@@ -47,13 +47,13 @@ export const PRICING = {
 } as const
 
 // Animation placeholders for email input
-export const EMAIL_PLACEHOLDERS = [
+export const EMAIL_PLACEHOLDERS: string[] = [
   'arodgers12',
   'mlynch24',
   'jkidd4',
   'amorgan76',
   'barbaralee17'
-] as const
+]
 
 // File upload limits
 export const MAX_IMAGES_PER_LISTING = 6

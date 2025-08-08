@@ -1,6 +1,9 @@
 import { Timestamp } from 'firebase/firestore'
 import type { Category, ListingStatus } from './constants'
 
+// Re-export types from constants
+export type { Category, ListingStatus }
+
 // User types
 export interface User {
   uid: string
@@ -10,12 +13,13 @@ export interface User {
   photoURL?: string
   rating: number
   ratingCount: number
+  profileComplete: boolean
   createdAt: Timestamp
   updatedAt: Timestamp
 }
 
 export interface UserProfile extends Omit<User, 'uid'> {
-  profileComplete: boolean
+  // profileComplete is already inherited from User
 }
 
 // Listing types
@@ -151,7 +155,7 @@ export interface NavbarProps {
 }
 
 // API response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: string

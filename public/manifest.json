@@ -1,7 +1,7 @@
 {
-  "name": "DULIF Marketplace",
-  "short_name": "DULIF",
-  "description": "The trusted marketplace for UC Berkeley students to buy and sell items safely on campus",
+  "name": "Dulif",
+  "short_name": "Dulif",
+  "description": "Buy, sell, and trade within the UC Berkeley community. Verified @berkeley.edu users only.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,31 +9,17 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/favicon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/favicon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     }
   ],
-  "categories": ["shopping", "education", "social"],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshot-narrow.png", 
-      "sizes": "640x1136",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+  "categories": ["shopping", "education", "social"]
 }

@@ -25,6 +25,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
   const [loading, setLoading] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { user } = useAuth()
+  const MotionDiv = motion.div as any
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -70,11 +71,12 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
     }
   }
 
-  const formatMessageTime = (timestamp: any) => {
+  const formatMessageTime = (timestamp: unknown) => {
     if (!timestamp) return ''
     
     try {
-      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
+      const ts = timestamp as { toDate?: () => Date }
+      const date = ts?.toDate ? ts.toDate() : new Date(timestamp as string | number | Date)
       return formatDistanceToNow(date, { addSuffix: true })
     } catch {
       return ''
@@ -137,7 +139,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
             const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId
             
             return (
-              <motion.div
+              <MotionDiv
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -180,7 +182,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </MotionDiv>
             )
           })}
         </AnimatePresence>
@@ -189,7 +191,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
           <div className="text-center py-8">
             <p className="text-gray-500 mb-2">No messages yet</p>
             <p className="text-sm text-gray-400">
-              Start the conversation about "{listingTitle}"
+              Start the conversation about &quot;{listingTitle}&quot;
             </p>
           </div>
         )}

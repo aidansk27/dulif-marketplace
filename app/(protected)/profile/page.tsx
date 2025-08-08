@@ -9,12 +9,12 @@ import {
   CameraIcon, 
   CheckIcon, 
   XMarkIcon,
-  StarIcon,
+  StarIcon as _StarIcon,
   EyeIcon,
   CalendarDaysIcon,
   IdentificationIcon
 } from '@heroicons/react/24/outline'
-import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
+import { StarIcon as _StarSolidIcon } from '@heroicons/react/24/solid'
 import { useAuth } from '@/contexts/AuthContext'
 import { updateUserProfile } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/Input'
 import { Stars } from '@/components/Stars'
 import { getSellerRatings } from '@/lib/ratings'
 import type { Rating } from '@/lib/ratings'
-import type { User } from '@/lib/types'
+import type { User as _User } from '@/lib/types'
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth()
@@ -31,6 +31,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [ratings, setRatings] = useState<Rating[]>([])
   const [error, setError] = useState('')
+  const MotionDiv = motion.div as any
   
   const [editData, setEditData] = useState({
     firstName: user?.firstName || '',
@@ -47,7 +48,8 @@ export default function ProfilePage() {
       // Fetch user ratings
       fetchUserRatings()
     }
-  }, [user])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]) // fetchUserRatings dependency intentionally omitted to prevent infinite re-renders
 
   const fetchUserRatings = async () => {
     if (!user) return
@@ -74,8 +76,9 @@ export default function ProfilePage() {
       
       await refreshUser()
       setIsEditing(false)
-    } catch (error: any) {
-      setError(error.message || 'Failed to update profile')
+    } catch (error: unknown) {
+      const err = error as { message?: string }
+      setError(err.message || 'Failed to update profile')
     } finally {
       setIsLoading(false)
     }
@@ -112,7 +115,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-lg overflow-hidden berkeley-glow"
@@ -201,7 +204,7 @@ export default function ProfilePage() {
               <div className="lg:col-span-2 space-y-8">
                 {/* Edit Form */}
                 {isEditing && (
-                  <motion.div
+                  <MotionDiv
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-primary/5 rounded-xl p-6 border border-primary/10"
@@ -232,7 +235,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 )}
 
                 {/* Seller Rating Section */}
@@ -286,11 +289,11 @@ export default function ProfilePage() {
                             <div className="flex items-center space-x-2 mb-2">
                               <Stars rating={rating.rating} size="sm" />
                               <span className="text-sm text-gray-500">
-                                {rating.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
+                                {(rating.createdAt as any)?.toDate?.()?.toLocaleDateString() || 'Recently'}
                               </span>
                             </div>
                             {rating.comment && (
-                              <p className="text-sm text-gray-700">"{rating.comment}"</p>
+                              <p className="text-sm text-gray-700">&quot;{rating.comment}&quot;</p>
                             )}
                           </div>
                         ))}
@@ -353,7 +356,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   )

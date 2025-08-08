@@ -18,8 +18,10 @@ export const ListingCard = ({ listing, seller, onClick }: ListingCardProps) => {
     return text.slice(0, maxLength) + '...'
   }
 
+  const MotionDiv = motion.div as any
+
   return (
-    <motion.div
+    <MotionDiv
       whileHover={{ y: -2, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -118,6 +120,6 @@ export const ListingCard = ({ listing, seller, onClick }: ListingCardProps) => {
           </div>
         )}
       </div>
-    </motion.div>
+    </MotionDiv>
   )
 }

@@ -13,6 +13,7 @@ interface TermsModalProps {
 }
 
 export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModalProps) => {
+  const MotionDiv = motion.div as any
   const [activeTab, setActiveTab] = useState<'terms' | 'privacy'>(defaultTab)
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto">
         {/* Backdrop */}
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -37,12 +38,12 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
 
         {/* Modal */}
         <div className="flex min-h-full items-center justify-center p-4">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-4xl berkeley-card rounded-3xl berkeley-glow overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="border-b border-border p-6">
@@ -85,7 +86,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
             <div className="p-6 max-h-96 overflow-y-auto">
               <AnimatePresence mode="wait">
                 {activeTab === 'terms' ? (
-                  <motion.div
+                  <MotionDiv
                     key="terms"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -99,14 +100,14 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                       <section>
                         <h3 className="text-lg font-semibold mb-3 text-primary">Agreement to Terms</h3>
                         <p className="mb-3">
-                          Accessing or using the dulif marketplace ("Service") forms a binding contract between you and dulif Inc. ("dulif," "we," "us," "our"). If you disagree with any part of the Terms, discontinue use immediately.
+                          Accessing or using the dulif marketplace (&quot;Service&quot;) forms a binding contract between you and dulif Inc. (&quot;dulif,&quot; &quot;we,&quot; &quot;us,&quot; &quot;our&quot;). If you disagree with any part of the Terms, discontinue use immediately.
                         </p>
                       </section>
 
                       <section>
                         <h3 className="text-lg font-semibold mb-3 text-primary">Changes to Terms</h3>
                         <p className="mb-3">
-                          We may revise these Terms at any time. Continued use after the "Last updated" date constitutes acceptance of the revised Terms.
+                          We may revise these Terms at any time. Continued use after the &quot;Last updated&quot; date constitutes acceptance of the revised Terms.
                         </p>
                       </section>
 
@@ -128,7 +129,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
 
                       <section>
                         <h3 className="text-lg font-semibold mb-3 text-primary">User-Generated Content & License</h3>
-                        <p className="mb-2">By posting text, images, ratings, or other content ("User Content") you</p>
+                        <p className="mb-2">By posting text, images, ratings, or other content (&quot;User Content&quot;) you</p>
                         <ul className="list-disc list-inside space-y-2 mb-3">
                           <li>grant dulif a worldwide, royalty-free, sublicensable licence to host, use, reproduce, modify, distribute, and display such User Content for operating and improving the Service;</li>
                           <li>warrant that you own or have rights to the User Content; and</li>
@@ -149,7 +150,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                       <section>
                         <h3 className="text-lg font-semibold mb-3 text-primary">Fees & Taxes</h3>
                         <p className="mb-3">
-                          Posting is free unless a feature or category is explicitly marked "paid." We may introduce or modify fees with 14 days' notice. Users are responsible for all applicable taxes and regulatory reporting.
+                          Posting is free unless a feature or category is explicitly marked &quot;paid.&quot; We may introduce or modify fees with 14 days&apos; notice. Users are responsible for all applicable taxes and regulatory reporting.
                         </p>
                       </section>
 
@@ -167,9 +168,9 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                         </p>
                       </section>
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 ) : (
-                  <motion.div
+                  <MotionDiv
                     key="privacy"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -183,7 +184,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                       <section>
                         <h3 className="text-lg font-semibold mb-3 text-primary">Scope</h3>
                         <p className="mb-3">
-                          This Policy explains how dulif collects, uses, discloses, and secures information when you access our website, mobile application, or related services ("Service").
+                          This Policy explains how dulif collects, uses, discloses, and secures information when you access our website, mobile application, or related services (&quot;Service&quot;).
                         </p>
                       </section>
 
@@ -276,7 +277,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                         </p>
                       </section>
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 )}
               </AnimatePresence>
             </div>
@@ -296,7 +297,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
     </AnimatePresence>

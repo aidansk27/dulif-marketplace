@@ -48,8 +48,8 @@ export const verifyCodeAndCreateAccount = async (email: string, code: string): P
   const snap = await getDoc(ref)
   if (!snap.exists()) throw new Error('No verification request found. Please request a new code.')
 
-  const data = snap.data() as any
-  if (data.attempts >= MAX_ATTEMPTS) throw new Error('Too many attempts. Please request a new code in a few minutes.')
+  const data = snap.data() as { code?: string; attempts?: number; expiresAt?: { toMillis: () => number }; rememberMe?: boolean }
+  if (data.attempts && data.attempts >= MAX_ATTEMPTS) throw new Error('Too many attempts. Please request a new code in a few minutes.')
 
   // Expiration check
   const now = Timestamp.now()
@@ -70,9 +70,10 @@ export const verifyCodeAndCreateAccount = async (email: string, code: string): P
 
   try {
     await createUserWithEmailAndPassword(auth, email, randomPassword)
-  } catch (err: any) {
+  } catch (err: unknown) {
     // If the user already exists, we can ignore account-exists error and continue
-    if (err?.code !== 'auth/email-already-in-use') throw err
+    const error = err as { code?: string }
+    if (error?.code !== 'auth/email-already-in-use') throw err
   }
 }
 

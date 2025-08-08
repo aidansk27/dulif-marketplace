@@ -36,6 +36,7 @@ export default function ListingDetailPage() {
   const [chatId, setChatId] = useState<string | null>(null)
   const [isLiked, setIsLiked] = useState(false)
   const [isContacting, setIsContacting] = useState(false)
+  const MotionDiv = motion.div as any
 
   const listingId = params.id as string
 
@@ -137,9 +138,10 @@ export default function ListingDetailPage() {
     }).format(price)
   }
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: unknown) => {
     try {
-      const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp)
+      const ts = timestamp as { toDate?: () => Date }
+      const date = ts?.toDate ? ts.toDate() : new Date(timestamp as string | number | Date)
       return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: 'long',
@@ -163,7 +165,7 @@ export default function ListingDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Listing not found</h1>
-          <p className="text-gray-600 mb-4">This listing may have been removed or doesn't exist.</p>
+          <p className="text-gray-600 mb-4">This listing may have been removed or doesn&apos;t exist.</p>
           <Button onClick={() => router.push('/')}>
             Back to Home
           </Button>
@@ -405,19 +407,19 @@ export default function ListingDetailPage() {
       {/* Chat Modal */}
       <AnimatePresence>
         {showChat && chatId && seller && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
             onClick={() => setShowChat(false)}
           >
-            <motion.div
+            <MotionDiv
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               className="w-full max-w-md h-[600px]"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <ChatWindow
                 chatId={chatId}
@@ -425,8 +427,8 @@ export default function ListingDetailPage() {
                 listingTitle={listing.title}
                 onClose={() => setShowChat(false)}
               />
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>

@@ -26,11 +26,12 @@ import type { NavbarProps, Category } from '@/lib/types'
 export const Navbar = ({ user }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
-  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [isSearchFocused, _setIsSearchFocused] = useState(false)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const { signOut } = useAuth()
   const router = useRouter()
+  const MotionDiv = motion.div as any
 
   const handleSignOut = async () => {
     try {
@@ -52,14 +53,14 @@ export const Navbar = ({ user }: NavbarProps) => {
     router.push(`/?category=${encodeURIComponent(category)}`)
   }
 
-  const handleApplyFilters = (filters: any) => {
+  const handleApplyFilters = (filters: { categories: string[]; minPrice?: number; maxPrice?: number; priceRange?: [number, number] }) => {
     const searchParams = new URLSearchParams()
     
     if (filters.categories.length > 0) {
       searchParams.set('categories', filters.categories.join(','))
     }
     
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 50) {
+    if (filters.priceRange && (filters.priceRange[0] > 0 || filters.priceRange[1] < 50)) {
       searchParams.set('minPrice', filters.priceRange[0].toString())
       searchParams.set('maxPrice', filters.priceRange[1].toString())
     }
@@ -111,8 +112,8 @@ export const Navbar = ({ user }: NavbarProps) => {
                     placeholder="Search listings..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setIsSearchFocused(true)}
-                    onBlur={() => setIsSearchFocused(false)}
+                    onFocus={() => _setIsSearchFocused(true)}
+                    onBlur={() => _setIsSearchFocused(false)}
                     className="w-64 pl-10 pr-4 py-2 text-sm"
                   />
                   <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -171,7 +172,7 @@ export const Navbar = ({ user }: NavbarProps) => {
               {/* Profile Dropdown */}
               <AnimatePresence>
                 {isProfileMenuOpen && (
-                  <motion.div
+                  <MotionDiv
                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -212,7 +213,7 @@ export const Navbar = ({ user }: NavbarProps) => {
                       <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
                       Sign Out
                     </button>
-                  </motion.div>
+                  </MotionDiv>
                 )}
               </AnimatePresence>
             </div>
@@ -234,7 +235,7 @@ export const Navbar = ({ user }: NavbarProps) => {
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -286,7 +287,7 @@ export const Navbar = ({ user }: NavbarProps) => {
                 <AdjustmentsHorizontalIcon className="w-4 h-4 mr-2" />
                 Filters & Advanced Search
               </Button>
-            </motion.div>
+            </MotionDiv>
           )}
         </AnimatePresence>
       </div>

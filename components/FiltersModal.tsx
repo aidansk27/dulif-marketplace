@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline'
 import { Button } from './ui/Button'
@@ -27,6 +27,7 @@ export const FiltersModal = ({
   onApplyFilters,
   initialFilters = {}
 }: FiltersModalProps) => {
+  const MotionDiv = motion.div as any
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     minPrice: 0,
@@ -104,19 +105,19 @@ export const FiltersModal = ({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-primary to-secondary text-white p-6">
@@ -268,8 +269,8 @@ export const FiltersModal = ({
               </div>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </MotionDiv>
+      </MotionDiv>
     </AnimatePresence>
   )
 }

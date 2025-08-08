@@ -16,6 +16,8 @@ export const VerificationInput = ({
   isLoading = false,
   error 
 }: VerificationInputProps) => {
+  const MotionInput = motion.input as any
+  const MotionP = motion.p as any
   const [values, setValues] = useState<string[]>(new Array(length).fill(''))
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
@@ -102,15 +104,15 @@ export const VerificationInput = ({
     <div className="space-y-4">
       <div className="flex justify-center space-x-3">
         {values.map((value, index) => (
-          <motion.input
+          <MotionInput
             key={index}
-            ref={(el) => inputRefs.current[index] = el}
+            ref={(el: HTMLInputElement | null) => inputRefs.current[index] = el}
             type="text"
             inputMode="numeric"
             maxLength={1}
             value={value}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             disabled={isLoading}
             className={`
@@ -130,13 +132,13 @@ export const VerificationInput = ({
       </div>
       
       {error && (
-        <motion.p
+        <MotionP
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center text-sm text-red-600 font-medium"
         >
           {error}
-        </motion.p>
+        </MotionP>
       )}
       
       <p className="text-center text-sm text-muted">

@@ -16,7 +16,7 @@ const BERKELEY_EMAIL_DOMAIN = 'berkeley.edu'
 
 export default function SignupPage() {
   const [netId, setNetId] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, _setIsLoading] = useState(false)
   const [error, setError] = useState('')
   // Two-step signup: this page collects only email (NetID)
   const [showTermsModal, setShowTermsModal] = useState(false)

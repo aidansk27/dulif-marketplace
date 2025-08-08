@@ -2,7 +2,8 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+// TODO: Switch to next/image for optimization
+// import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { CameraIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -36,7 +37,7 @@ export default function ProfileSetupPage() {
   const { user, refreshUser } = useAuth()
   const router = useRouter()
 
-  const handleInputChange = (field: keyof ProfileSetupFormData, value: any) => {
+  const handleInputChange = (field: keyof ProfileSetupFormData, value: string | boolean | File | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -126,9 +127,10 @@ export default function ProfileSetupPage() {
 
       // Redirect to home
       router.push('/')
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Profile setup error:', error)
-      setError(error.message || 'Failed to set up profile')
+      const err = error as { message?: string }
+      setError(err.message || 'Failed to set up profile')
     } finally {
       setIsLoading(false)
     }
@@ -237,7 +239,7 @@ export default function ProfileSetupPage() {
               </h1>
               
               <h2 className="text-2xl font-semibold text-foreground mb-4">
-                Welcome to Berkeley's Marketplace!
+                Welcome to Berkeley&apos;s Marketplace!
               </h2>
               
               <p className="text-muted text-lg mb-8 leading-relaxed">

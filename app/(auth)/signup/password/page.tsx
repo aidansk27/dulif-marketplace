@@ -17,8 +17,8 @@ export default function SignupPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [showUnblur, setShowUnblur] = useState(false) // Start blurred since coming from first page
-  const [showPopup, setShowPopup] = useState(true) // Start visible since transitioning from first page
+  const [showUnblur, _setShowUnblur] = useState(false) // Start blurred since coming from first page
+  const [showPopup, _setShowPopup] = useState(true) // Start visible since transitioning from first page
   const [showTermsModal, setShowTermsModal] = useState(false)
   const [termsModalTab, setTermsModalTab] = useState<'terms' | 'privacy'>('terms')
   const [passwordIssues, setPasswordIssues] = useState<string[]>([])
@@ -75,9 +75,10 @@ export default function SignupPasswordPage() {
         profileComplete: false,
       })
       router.push('/profile-setup')
-    } catch (err: any) {
-      if (err?.code === 'auth/email-already-in-use') setError('Email already registered. Please log in instead.')
-      else if (err?.code === 'auth/weak-password') setError('Password is too weak. Use at least 6 characters.')
+    } catch (err: unknown) {
+      const error = err as { code?: string }
+      if (error?.code === 'auth/email-already-in-use') setError('Email already registered. Please log in instead.')
+      else if (error?.code === 'auth/weak-password') setError('Password is too weak. Use at least 6 characters.')
       else setError('Failed to create account. Please try again.')
     } finally {
       setIsLoading(false)

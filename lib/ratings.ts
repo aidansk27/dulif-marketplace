@@ -10,7 +10,7 @@ export interface Rating {
   listingId: string
   rating: number // 1-5 stars
   comment?: string
-  createdAt: any
+  createdAt: Date
 }
 
 // Calculate precise seller rating based on all ratings
@@ -66,7 +66,7 @@ export const submitRating = async (
       listingId,
       rating,
       comment: comment || '',
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp() as any
     }
 
     await addDoc(collection(db, 'ratings'), newRating)

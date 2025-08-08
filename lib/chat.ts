@@ -10,7 +10,7 @@ import {
   limit,
   serverTimestamp,
   getDocs,
-  setDoc,
+  setDoc as _setDoc,
 } from 'firebase/firestore'
 import { db } from './firebase'
 import type { Chat, Message } from './types'
@@ -72,7 +72,7 @@ export const sendMessage = async (
   const chatRef = doc(db, 'chats', chatId)
   await updateDoc(chatRef, {
     lastMessage: message.trim(),
-    lastTime: serverTimestamp(),
+    lastTime: serverTimestamp() as any,
   })
 }
 

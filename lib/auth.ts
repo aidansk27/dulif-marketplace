@@ -7,7 +7,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  getAuth
+  getAuth as _getAuth
 } from 'firebase/auth'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from './firebase'
@@ -70,11 +70,12 @@ export const sendMagicLink = async (email: string, rememberMe: boolean = false):
     storage.setItem('emailForSignIn', email)
     
     console.log(`📧 Magic link sent to ${email} (Remember Me: ${rememberMe})`)
-  } catch (error: any) {
-    if (error.code === 'auth/invalid-email') {
+  } catch (error: unknown) {
+    const err = error as { code?: string }
+    if (err.code === 'auth/invalid-email') {
       throw new Error('Please enter a valid email address')
     }
-    if (error.code === 'auth/missing-email') {
+    if (err.code === 'auth/missing-email') {
       throw new Error('Email address is required')
     }
     throw error
@@ -128,8 +129,9 @@ export const completeSignIn = async (url: string): Promise<User> => {
     
     console.log(`✅ Sign-in complete for ${email} (emailForSignIn existed: ${emailExisted})`)
     return user
-  } catch (error: any) {
-    console.error('❌ Sign-in failed:', error.code, error.message)
+  } catch (error: unknown) {
+    const err = error as { code?: string; message?: string }
+    console.error('❌ Sign-in failed:', err.code, err.message)
     throw error
   }
 }
@@ -149,8 +151,11 @@ export const getOrCreateUser = async (uid: string, email: string): Promise<User>
     email,
     firstName: '',
     lastName: '',
-    createdAt: new Date(),
-    isVerified: true,
+    photoURL: '',
+    rating: 0,
+    ratingCount: 0,
+    createdAt: serverTimestamp() as any,
+    updatedAt: serverTimestamp() as any,
     profileComplete: false
   }
   

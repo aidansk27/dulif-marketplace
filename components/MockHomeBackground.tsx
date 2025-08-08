@@ -29,6 +29,7 @@ const imageSources = [
 ]
 
 export function MockHomeBackground({ isBlurred = true, showTitles = true, showRatings = true, className = '', disableAnimations = false, showCursor = false }: MockHomeBackgroundProps) {
+  const MotionDiv = motion.div as any
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
 
   const ratings = useMemo(() => {
@@ -110,7 +111,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {imageSources.map((item, index) => {
-                const Component = disableAnimations ? 'div' : motion.div
+                const Component = disableAnimations ? 'div' : MotionDiv
                 const animationProps = disableAnimations ? {} : {
                   initial: { opacity: 0, y: 20 },
                   animate: { opacity: 1, y: 0 },
@@ -153,7 +154,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
 
         {/* Animated Cursor (blurred, above background, below overlays) */}
         {showCursor && !disableAnimations && (
-          <motion.div
+          <MotionDiv
             className="absolute w-6 h-6 pointer-events-none z-0 blur-sm"
             animate={{ x: cursorPosition.x, y: cursorPosition.y }}
             transition={{ duration: 1.8, ease: 'easeInOut' }}
@@ -161,7 +162,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
             <div className="w-full h-full bg-white rounded-full shadow-lg border-2 border-[#003262] opacity-90">
               <div className="absolute inset-1 bg-[#003262] rounded-full animate-pulse"></div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </div>
     </div>

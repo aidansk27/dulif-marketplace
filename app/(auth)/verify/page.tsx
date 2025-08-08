@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { EnvelopeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
@@ -10,7 +10,7 @@ import { Logo } from '@/components/ui/Logo'
 import MockHomeBackground from '@/components/MockHomeBackground'
 import { useCountdown } from '@/hooks/useCountdown'
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [firebaseErrorCode, setFirebaseErrorCode] = useState('')
@@ -18,10 +18,11 @@ export default function VerifyPage() {
   const [isResending, setIsResending] = useState(false)
   const [resendCount, setResendCount] = useState(0)
   const [isLocked, setIsLocked] = useState(false)
-  const [debugInfo, setDebugInfo] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { timeLeft, isActive, start, reset } = useCountdown(30)
+  const { timeLeft, isActive, start, reset: _reset } = useCountdown(30)
+  const MotionDiv = motion.div as any
 
   useEffect(() => {
     const handleSignIn = async () => {
@@ -92,10 +93,11 @@ export default function VerifyPage() {
           }
           setIsLoading(false)
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Sign-in error:', error)
-        setError(error.message || 'Failed to complete sign-in')
-        setFirebaseErrorCode(error.code || '')
+        const err = error as { message?: string; code?: string }
+        setError(err.message || 'Failed to complete sign-in')
+        setFirebaseErrorCode(err.code || '')
         setIsLoading(false)
       }
     }
@@ -125,9 +127,10 @@ export default function VerifyPage() {
         setResendCount(2)
         setIsLocked(true)
       }
-    } catch (error: any) {
-      setError(error.message || 'Failed to resend magic link')
-      setFirebaseErrorCode(error.code || '')
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string }
+      setError(err.message || 'Failed to resend magic link')
+      setFirebaseErrorCode(err.code || '')
     } finally {
       setIsResending(false)
     }
@@ -148,13 +151,13 @@ export default function VerifyPage() {
         >
           DEBUG {isOpen ? '▼' : '▲'}
         </button>
-        {isOpen && (
+        {isOpen && debugInfo && (
           <div className="mt-2 bg-black text-green-400 p-3 rounded text-xs font-mono max-w-md overflow-auto max-h-64">
-            <div><strong>Current Host:</strong> {debugInfo.currentHost}</div>
-            <div><strong>Configured Host:</strong> {debugInfo.configuredHost}</div>
+            <div><strong>Current Host:</strong> {String(debugInfo.currentHost || 'unknown')}</div>
+            <div><strong>Configured Host:</strong> {String(debugInfo.configuredHost || 'unknown')}</div>
             <div><strong>Is Magic Link:</strong> {debugInfo.isMagicLinkResult ? 'YES' : 'NO'}</div>
-            <div><strong>Email (localStorage):</strong> {debugInfo.emailInLocalStorage || 'none'}</div>
-            <div><strong>Email (sessionStorage):</strong> {debugInfo.emailInSessionStorage || 'none'}</div>
+            <div><strong>Email (localStorage):</strong> {String(debugInfo.emailInLocalStorage || 'none')}</div>
+            <div><strong>Email (sessionStorage):</strong> {String(debugInfo.emailInSessionStorage || 'none')}</div>
             <div><strong>Firebase Error:</strong> {firebaseErrorCode || 'none'}</div>
             <div><strong>URL Params:</strong></div>
             <pre className="text-xs">{JSON.stringify(debugInfo.searchParams, null, 2)}</pre>
@@ -184,11 +187,12 @@ export default function VerifyPage() {
       <div className="min-h-screen relative p-4">
         <MockHomeBackground isBlurred showTitles={false} disableAnimations />
         <div className="relative z-10 max-w-md w-full mx-auto">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl shadow-lg p-8 text-center berkeley-card"
           >
+            {/* Type cast needed for motion.div */}
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
             </div>
@@ -237,7 +241,7 @@ export default function VerifyPage() {
                 </Button>
               )}
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
         <DebugPanel />
       </div>
@@ -249,7 +253,7 @@ export default function VerifyPage() {
       {/* Blurred homepage background */}
       <MockHomeBackground isBlurred showTitles={false} disableAnimations />
       <div className="relative z-10 max-w-md w-full mx-auto flex items-center justify-center min-h-[calc(100vh-2rem)]">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl shadow-lg p-8 text-center berkeley-card"
@@ -304,9 +308,17 @@ export default function VerifyPage() {
               <strong>Tip:</strong> Check your spam folder if you don&apos;t see the email within a few minutes.
             </p>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
       <DebugPanel />
     </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyPageContent />
+    </Suspense>
   )
 }

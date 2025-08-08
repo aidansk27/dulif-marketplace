@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { collection, query, orderBy, limit, getDocs, where, startAfter, QueryDocumentSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
@@ -23,7 +23,9 @@ export default function HomePage() {
   const [filter, setFilter] = useState<'all' | 'boosted'>('all')
   const { user } = useAuth()
   const { currentPrompt, closeRatingPrompt, removePendingRating } = useRatingPrompts(user?.uid || null)
+  const router = useRouter()
   const searchParams = useSearchParams()
+  const MotionDiv = motion.div as any
 
   const LISTINGS_PER_PAGE = 20
 
@@ -40,7 +42,7 @@ export default function HomePage() {
 
     try {
       // Start with basic query
-      const constraints: any[] = [
+      const constraints: Parameters<typeof query>[1][] = [
         where('status', '==', 'active'),
         orderBy('createdAt', 'desc'),
         limit(LISTINGS_PER_PAGE)
@@ -144,7 +146,8 @@ export default function HomePage() {
     setLastDoc(null) // Reset pagination when filters change
     setHasMore(true)
     fetchListings()
-  }, [filter, searchQuery, categoryFilter, categoriesFilter, minPrice, maxPrice])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, searchQuery, categoryFilter, categoriesFilter, minPrice, maxPrice]) // fetchListings dependency intentionally omitted to prevent infinite re-renders
 
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
@@ -214,18 +217,18 @@ export default function HomePage() {
               ? 'No boosted listings available right now.'
               : 'Be the first to post a listing!'}
           </p>
-          <Button href="/create">
+          <Button onClick={() => router.push('/create')}>
             Create Your First Listing
           </Button>
         </div>
       ) : (
         <>
-          <motion.div
+          <MotionDiv
             layout
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {listings.map((listing, index) => (
-              <motion.div
+              <MotionDiv
                 key={listing.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -236,9 +239,9 @@ export default function HomePage() {
                   seller={sellers[listing.sellerId]}
                   onClick={() => window.location.href = `/listing/${listing.id}`}
                 />
-              </motion.div>
+              </MotionDiv>
             ))}
-          </motion.div>
+          </MotionDiv>
 
           {/* Load More Button */}
           {hasMore && (

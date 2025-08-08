@@ -26,6 +26,7 @@ export const RatingModal = ({
   listingTitle,
   buyerId
 }: RatingModalProps) => {
+  const MotionDiv = motion.div as any
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [comment, setComment] = useState('')
@@ -48,8 +49,9 @@ export const RatingModal = ({
       onClose()
       // Show success message
       alert('Thank you for your rating!')
-    } catch (error: any) {
-      setError(error.message || 'Failed to submit rating')
+    } catch (error: unknown) {
+      const err = error as { message?: string }
+      setError(err.message || 'Failed to submit rating')
     } finally {
       setIsSubmitting(false)
     }
@@ -81,7 +83,7 @@ export const RatingModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <motion.div
+      <MotionDiv
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
@@ -196,7 +198,7 @@ export const RatingModal = ({
             Ratings help build trust in our community. Please be honest and respectful.
           </p>
         </form>
-      </motion.div>
+      </MotionDiv>
     </div>
   )
 }

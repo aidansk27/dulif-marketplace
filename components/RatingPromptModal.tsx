@@ -25,6 +25,8 @@ export const RatingPromptModal = ({
   buyerId,
   onRatingSubmitted
 }: RatingPromptModalProps) => {
+  const MotionDiv = motion.div as any
+  const MotionP = motion.p as any
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [comment, setComment] = useState('')
@@ -61,8 +63,9 @@ export const RatingPromptModal = ({
       setComment('')
       setHoveredRating(0)
       
-    } catch (error: any) {
-      setError(error.message || 'Failed to submit rating')
+    } catch (error: unknown) {
+      const err = error as { message?: string }
+      setError(err.message || 'Failed to submit rating')
     } finally {
       setIsSubmitting(false)
     }
@@ -77,19 +80,19 @@ export const RatingPromptModal = ({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="bg-white rounded-2xl shadow-2xl w-full max-w-md"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-primary to-secondary text-white p-6 rounded-t-2xl">
@@ -150,7 +153,7 @@ export const RatingPromptModal = ({
               </div>
               
               {rating > 0 && (
-                <motion.p
+                <MotionP
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-sm font-medium text-primary"
@@ -160,7 +163,7 @@ export const RatingPromptModal = ({
                   {rating === 3 && "Good"}
                   {rating === 4 && "Very Good"}
                   {rating === 5 && "Excellent"}
-                </motion.p>
+                </MotionP>
               )}
             </div>
 
@@ -184,13 +187,13 @@ export const RatingPromptModal = ({
 
             {/* Error */}
             {error && (
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg"
               >
                 <p className="text-sm text-red-600">{error}</p>
-              </motion.div>
+              </MotionDiv>
             )}
 
             {/* Actions */}
@@ -218,8 +221,8 @@ export const RatingPromptModal = ({
               🔒 Your feedback helps build trust in the Berkeley community
             </p>
           </div>
-        </motion.div>
-      </motion.div>
+        </MotionDiv>
+      </MotionDiv>
     </AnimatePresence>
   )
 }

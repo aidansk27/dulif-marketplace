@@ -9,7 +9,7 @@ import { db } from '@/lib/firebase'
 import { useAuth } from '@/contexts/AuthContext'
 import { uploadListingImages, compressImage } from '@/lib/storage'
 import { CreateListingWizard } from '@/components/CreateListingWizard'
-import type { CreateListingData, Listing } from '@/lib/types'
+import type { CreateListingData } from '@/lib/types'
 
 export default function CreateListingPage() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -18,6 +18,10 @@ export default function CreateListingPage() {
   const [listingId, setListingId] = useState<string | null>(null)
   const { user } = useAuth()
   const router = useRouter()
+  const MotionDiv = motion.div as any
+  const MotionSpan = motion.span as any
+  const MotionH1 = motion.h1 as any
+  const MotionP = motion.p as any
 
   const handleComplete = async (data: CreateListingData) => {
     if (!user) return
@@ -105,7 +109,7 @@ export default function CreateListingPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatePresence mode="wait">
           {!showSuccess ? (
-            <motion.div
+            <MotionDiv
               key="wizard"
               initial={{ opacity: 1, y: 0 }}
               exit={{ 
@@ -123,9 +127,9 @@ export default function CreateListingPage() {
                 onComplete={handleComplete}
                 isSubmitting={isSubmitting}
               />
-            </motion.div>
+            </MotionDiv>
           ) : (
-            <motion.div
+            <MotionDiv
               key="success"
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
               animate={{ 
@@ -142,41 +146,41 @@ export default function CreateListingPage() {
               className="flex items-center justify-center min-h-[60vh]"
             >
               <div className="bg-white rounded-3xl shadow-2xl p-12 text-center max-w-lg w-full berkeley-glow">
-                <motion.div
+                <MotionDiv
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, duration: 0.5, type: "spring", bounce: 0.6 }}
                   className="w-24 h-24 bg-gradient-to-br from-secondary to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl"
                 >
-                  <motion.span
+                  <MotionSpan
                     initial={{ rotate: -180, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.5 }}
                     className="text-white font-bold text-4xl"
                   >
                     🎉
-                  </motion.span>
-                </motion.div>
+                  </MotionSpan>
+                </MotionDiv>
 
-                <motion.h1
+                <MotionH1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
                   className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4"
                 >
-                  It's Live!
-                </motion.h1>
+                  It&apos;s Live!
+                </MotionH1>
 
-                <motion.p
+                <MotionP
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
                   className="text-lg text-muted mb-8 leading-relaxed"
                 >
                   Your listing is now public and visible to all Berkeley students.
-                </motion.p>
+                </MotionP>
 
-                <motion.div
+                <MotionDiv
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.6 }}
@@ -195,9 +199,9 @@ export default function CreateListingPage() {
                   >
                     Back to Homepage
                   </button>
-                </motion.div>
+                </MotionDiv>
               </div>
-            </motion.div>
+            </MotionDiv>
           )}
         </AnimatePresence>
       </div>

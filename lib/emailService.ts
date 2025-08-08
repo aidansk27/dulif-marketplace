@@ -2,7 +2,12 @@
 // Smart fallback system for maximum reliability
 
 // Dynamic import to avoid build errors if SendGrid not installed
-let sgMail: any = null
+interface SendGridMail {
+  setApiKey: (key: string) => void
+  send: (template: EmailTemplate) => Promise<void>
+}
+
+let sgMail: SendGridMail | null = null
 
 // Initialize SendGrid only if available and configured
 const initializeSendGrid = async () => {
@@ -11,13 +16,20 @@ const initializeSendGrid = async () => {
   try {
     if (process.env.SENDGRID_API_KEY) {
       // Dynamic import to avoid build errors
-      const sendGridModule = await import('@sendgrid/mail')
-      sgMail = sendGridModule.default
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-      console.log('✅ SendGrid initialized successfully')
-      return sgMail
+      try {
+        const sendGridModule = await import('@sendgrid/mail' as any)
+        sgMail = sendGridModule.default
+        if (sgMail) {
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+        }
+        console.log('✅ SendGrid initialized successfully')
+        return sgMail
+      } catch {
+        console.warn('⚠️ SendGrid package not available')
+        return null
+      }
     }
-  } catch (error) {
+  } catch (_error) {
     console.warn('⚠️ SendGrid not available, using fallback methods')
   }
   

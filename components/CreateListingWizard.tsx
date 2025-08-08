@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  PhotoIcon,
+  PhotoIcon as _PhotoIcon,
   XMarkIcon,
   CheckIcon,
   CameraIcon,
@@ -13,7 +13,7 @@ import {
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { CATEGORIES, SUBCATEGORIES, MAX_IMAGES_PER_LISTING, MAX_FILE_SIZE } from '@/lib/constants'
-import type { CreateListingData, Category } from '@/lib/types'
+import type { CreateListingData } from '@/lib/types'
 
 interface CreateListingWizardProps {
   currentStep: number
@@ -52,8 +52,9 @@ export const CreateListingWizard = ({
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const MotionDiv = motion.div as any
 
-  const updateFormData = (field: keyof CreateListingData, value: any) => {
+  const updateFormData = (field: keyof CreateListingData, value: string | number | boolean | File[] | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     // Clear error when user starts typing
     if (errors[field]) {
@@ -239,7 +240,7 @@ export const CreateListingWizard = ({
             </div>
 
             {formData.category && (
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-3"
@@ -265,7 +266,7 @@ export const CreateListingWizard = ({
                 {errors.subcategory && (
                   <p className="text-sm text-red-600">{errors.subcategory}</p>
                 )}
-              </motion.div>
+              </MotionDiv>
             )}
           </div>
         )
@@ -332,7 +333,7 @@ export const CreateListingWizard = ({
               {/* Image Grid */}
               <div className="grid grid-cols-3 gap-4 mb-4">
                 {imagePreviews.map((preview, index) => (
-                  <motion.div
+                  <MotionDiv
                     key={index}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -349,7 +350,7 @@ export const CreateListingWizard = ({
                     >
                       <XMarkIcon className="w-3 h-3" />
                     </button>
-                  </motion.div>
+                  </MotionDiv>
                 ))}
                 
                 {/* Add Photo Button */}
@@ -521,7 +522,7 @@ export const CreateListingWizard = ({
       <div className="p-6">
         <div className="min-h-[400px]">
           <AnimatePresence mode="wait" custom={currentStep}>
-            <motion.div
+            <MotionDiv
               key={currentStep}
               custom={currentStep}
               variants={slideVariants}
@@ -534,7 +535,7 @@ export const CreateListingWizard = ({
               }}
             >
               {renderStep()}
-            </motion.div>
+            </MotionDiv>
           </AnimatePresence>
         </div>
 
@@ -570,19 +571,19 @@ export const CreateListingWizard = ({
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirmation && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
             onClick={() => setShowConfirmation(false)}
           >
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -620,8 +621,8 @@ export const CreateListingWizard = ({
                   Publish
                 </Button>
               </div>
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>

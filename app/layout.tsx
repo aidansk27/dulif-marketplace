@@ -10,17 +10,31 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "dulif - Berkeley Student Marketplace",
-  description: "The trusted marketplace for UC Berkeley students to buy and sell items safely on campus.",
-  keywords: "Berkeley, UC Berkeley, marketplace, students, buy, sell, textbooks, furniture",
-  authors: [{ name: "DULIF Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#003262",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "DULIF Marketplace",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://dulif.com'),
+  title: 'Dulif — UC Berkeley Student Marketplace',
+  description: 'Buy, sell, and trade within the UC Berkeley community. Verified @berkeley.edu users only.',
+  applicationName: 'Dulif',
+  themeColor: '#003262',
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/transdulif.svg', type: 'image/svg+xml' }
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    title: 'Dulif — UC Berkeley Student Marketplace',
+    description: 'Buy, sell, and trade within the UC Berkeley community. Verified @berkeley.edu users only.',
+    siteName: 'Dulif',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dulif — UC Berkeley Student Marketplace',
+    description: 'Buy, sell, and trade within the UC Berkeley community. Verified @berkeley.edu users only.',
   },
 };
 
@@ -31,6 +45,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script 
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Dulif",
+              "url": "https://dulif.com",
+              "logo": "https://dulif.com/transdulif.svg"
+            })
+          }}
+        />
+      </head>
       <body className={`${inter.variable} antialiased`}>
         <AuthProvider>
           {children}
