@@ -16,8 +16,8 @@ export const VerificationInput = ({
   isLoading = false,
   error 
 }: VerificationInputProps) => {
-  const MotionInput = motion.input as any
-  const MotionP = motion.p as any
+  const MotionInput = motion.input as React.ElementType
+  const MotionP = motion.p as React.ElementType
   const [values, setValues] = useState<string[]>(new Array(length).fill(''))
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 

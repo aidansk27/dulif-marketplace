@@ -25,8 +25,8 @@ export const RatingPromptModal = ({
   buyerId,
   onRatingSubmitted
 }: RatingPromptModalProps) => {
-  const MotionDiv = motion.div as any
-  const MotionP = motion.p as any
+  const MotionDiv = motion.div as React.ElementType
+  const MotionP = motion.p as React.ElementType
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [comment, setComment] = useState('')

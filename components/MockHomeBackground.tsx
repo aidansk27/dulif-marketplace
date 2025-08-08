@@ -29,7 +29,7 @@ const imageSources = [
 ]
 
 export function MockHomeBackground({ isBlurred = true, showTitles = true, showRatings = true, className = '', disableAnimations = false, showCursor = false }: MockHomeBackgroundProps) {
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
 
   const ratings = useMemo(() => {

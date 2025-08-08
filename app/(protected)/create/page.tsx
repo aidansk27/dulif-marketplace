@@ -18,10 +18,10 @@ export default function CreateListingPage() {
   const [listingId, setListingId] = useState<string | null>(null)
   const { user } = useAuth()
   const router = useRouter()
-  const MotionDiv = motion.div as any
-  const MotionSpan = motion.span as any
-  const MotionH1 = motion.h1 as any
-  const MotionP = motion.p as any
+  const MotionDiv = motion.div as React.ElementType
+  const MotionSpan = motion.span as React.ElementType
+  const MotionH1 = motion.h1 as React.ElementType
+  const MotionP = motion.p as React.ElementType
 
   const handleComplete = async (data: CreateListingData) => {
     if (!user) return

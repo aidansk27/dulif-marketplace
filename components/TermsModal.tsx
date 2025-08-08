@@ -13,7 +13,7 @@ interface TermsModalProps {
 }
 
 export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModalProps) => {
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   const [activeTab, setActiveTab] = useState<'terms' | 'privacy'>(defaultTab)
 
   useEffect(() => {

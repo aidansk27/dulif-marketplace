@@ -26,12 +26,12 @@ import type { NavbarProps, Category } from '@/lib/types'
 export const Navbar = ({ user }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
-  const [isSearchFocused, _setIsSearchFocused] = useState(false)
+  const [_isSearchFocused, _setIsSearchFocused] = useState(false)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const { signOut } = useAuth()
   const router = useRouter()
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const handleSignOut = async () => {
     try {

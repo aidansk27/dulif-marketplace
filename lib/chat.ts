@@ -11,6 +11,7 @@ import {
   serverTimestamp,
   getDocs,
   setDoc as _setDoc,
+  FieldValue,
 } from 'firebase/firestore'
 import { db } from './firebase'
 import type { Chat, Message } from './types'
@@ -43,7 +44,7 @@ export const createOrGetChat = async (
     listingId,
     members: [sellerId, buyerId],
     lastMessage: '',
-    lastTime: serverTimestamp() as any,
+    lastTime: serverTimestamp() as FieldValue,
     sellerId,
     buyerId,
   }
@@ -61,7 +62,7 @@ export const sendMessage = async (
   const messageData: Omit<Message, 'id'> = {
     senderId,
     body: message.trim(),
-    createdAt: serverTimestamp() as any,
+    createdAt: serverTimestamp() as FieldValue,
     read: false,
   }
   
@@ -72,7 +73,7 @@ export const sendMessage = async (
   const chatRef = doc(db, 'chats', chatId)
   await updateDoc(chatRef, {
     lastMessage: message.trim(),
-    lastTime: serverTimestamp() as any,
+    lastTime: serverTimestamp() as FieldValue,
   })
 }
 

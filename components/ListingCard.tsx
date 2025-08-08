@@ -18,7 +18,7 @@ export const ListingCard = ({ listing, seller, onClick }: ListingCardProps) => {
     return text.slice(0, maxLength) + '...'
   }
 
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   return (
     <MotionDiv

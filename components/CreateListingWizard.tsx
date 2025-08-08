@@ -52,7 +52,7 @@ export const CreateListingWizard = ({
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const updateFormData = (field: keyof CreateListingData, value: string | number | boolean | File[] | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }))

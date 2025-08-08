@@ -62,8 +62,8 @@ export const sendRatingReminders = async (): Promise<void> => {
 // Process individual pending rating
 const processPendingRating = async (pendingRating: PendingRating): Promise<void> => {
   const now = new Date()
-  const createdAt = (pendingRating.createdAt as any)?.toDate?.() || new Date(0)
-  const lastReminded = (pendingRating.lastReminded as any)?.toDate?.() || new Date(0)
+  const createdAt = (pendingRating.createdAt as { toDate?: () => Date })?.toDate?.() || new Date(0)
+  const lastReminded = (pendingRating.lastReminded as { toDate?: () => Date })?.toDate?.() || new Date(0)
   
   // Calculate days since transaction
   const daysSinceTransaction = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24))

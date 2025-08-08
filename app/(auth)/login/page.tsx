@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [showTermsModal, setShowTermsModal] = useState(false)
   const [termsModalTab, setTermsModalTab] = useState<'terms' | 'privacy'>('terms')
   const router = useRouter()
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const animatedPlaceholder = useTypingAnimation({
     words: EMAIL_PLACEHOLDERS,

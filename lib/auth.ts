@@ -9,7 +9,7 @@ import {
   browserSessionPersistence,
   getAuth as _getAuth
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, serverTimestamp, FieldValue } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { User } from './types'
 import { BERKELEY_EMAIL_DOMAIN } from './constants'
@@ -154,8 +154,8 @@ export const getOrCreateUser = async (uid: string, email: string): Promise<User>
     photoURL: '',
     rating: 0,
     ratingCount: 0,
-    createdAt: serverTimestamp() as any,
-    updatedAt: serverTimestamp() as any,
+    createdAt: serverTimestamp() as FieldValue,
+    updatedAt: serverTimestamp() as FieldValue,
     profileComplete: false
   }
   

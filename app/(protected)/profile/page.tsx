@@ -31,7 +31,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [ratings, setRatings] = useState<Rating[]>([])
   const [error, setError] = useState('')
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   
   const [editData, setEditData] = useState({
     firstName: user?.firstName || '',
@@ -106,8 +106,8 @@ export default function ProfilePage() {
     )
   }
 
-  const memberSince = user.createdAt?.toDate ? 
-    user.createdAt.toDate().toLocaleDateString('en-US', { 
+  const memberSince = (user.createdAt as { toDate?: () => Date })?.toDate ? 
+    (user.createdAt as { toDate: () => Date }).toDate().toLocaleDateString('en-US', { 
       month: 'long', 
       year: 'numeric' 
     }) : 'Recently'
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                             <div className="flex items-center space-x-2 mb-2">
                               <Stars rating={rating.rating} size="sm" />
                               <span className="text-sm text-gray-500">
-                                {(rating.createdAt as any)?.toDate?.()?.toLocaleDateString() || 'Recently'}
+                                {(rating.createdAt as { toDate?: () => Date })?.toDate?.()?.toLocaleDateString() || 'Recently'}
                               </span>
                             </div>
                             {rating.comment && (

@@ -22,7 +22,7 @@ function VerifyPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { timeLeft, isActive, start, reset: _reset } = useCountdown(30)
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   useEffect(() => {
     const handleSignIn = async () => {

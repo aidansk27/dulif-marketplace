@@ -2,6 +2,14 @@
 // Smart fallback system for maximum reliability
 
 // Dynamic import to avoid build errors if SendGrid not installed
+interface EmailPayload {
+  to: string
+  subject: string
+  html?: string
+  text?: string
+  from?: string
+}
+
 interface SendGridMail {
   setApiKey: (key: string) => void
   send: (template: EmailTemplate) => Promise<void>
@@ -17,7 +25,7 @@ const initializeSendGrid = async () => {
     if (process.env.SENDGRID_API_KEY) {
       // Dynamic import to avoid build errors
       try {
-        const sendGridModule = await import('@sendgrid/mail' as any)
+        const sendGridModule = await import('@sendgrid/mail' as unknown as string)
         sgMail = sendGridModule.default
         if (sgMail) {
           sgMail.setApiKey(process.env.SENDGRID_API_KEY)

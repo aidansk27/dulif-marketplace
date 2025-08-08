@@ -27,7 +27,7 @@ export const FiltersModal = ({
   onApplyFilters,
   initialFilters = {}
 }: FiltersModalProps) => {
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     minPrice: 0,

@@ -26,7 +26,7 @@ export const RatingModal = ({
   listingTitle,
   buyerId
 }: RatingModalProps) => {
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [comment, setComment] = useState('')

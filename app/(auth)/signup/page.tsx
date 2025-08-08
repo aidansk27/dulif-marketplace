@@ -27,7 +27,7 @@ export default function SignupPage() {
   
   const router = useRouter()
   // Work around framer-motion TS inference hiccup in this environment
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const email = netId ? `${netId}@${BERKELEY_EMAIL_DOMAIN}` : ''
 

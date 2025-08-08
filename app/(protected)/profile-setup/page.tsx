@@ -19,7 +19,7 @@ import type { ProfileSetupFormData } from '@/lib/types'
 
 export default function ProfileSetupPage() {
   // Work around framer-motion TS hiccup in this environment
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
   const [step, setStep] = useState<'intro' | 'form'>('intro')
   const [formData, setFormData] = useState<ProfileSetupFormData>({
     firstName: '',

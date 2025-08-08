@@ -25,7 +25,7 @@ export default function HomePage() {
   const { currentPrompt, closeRatingPrompt, removePendingRating } = useRatingPrompts(user?.uid || null)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const LISTINGS_PER_PAGE = 20
 

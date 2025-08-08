@@ -36,7 +36,7 @@ export default function ListingDetailPage() {
   const [chatId, setChatId] = useState<string | null>(null)
   const [isLiked, setIsLiked] = useState(false)
   const [isContacting, setIsContacting] = useState(false)
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const listingId = params.id as string
 

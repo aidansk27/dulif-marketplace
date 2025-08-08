@@ -25,7 +25,7 @@ export const ChatWindow = ({ chatId, otherUser, listingTitle, onClose }: ChatWin
   const [loading, setLoading] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { user } = useAuth()
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

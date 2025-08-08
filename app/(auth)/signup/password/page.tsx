@@ -26,7 +26,7 @@ export default function SignupPasswordPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
-  const MotionDiv = motion.div as any
+  const MotionDiv = motion.div as React.ElementType
 
   const email = (typeof window !== 'undefined') ? (sessionStorage.getItem('pendingSignupEmail') || '') : ''
   const remember = (typeof window !== 'undefined') ? (sessionStorage.getItem('pendingRememberMe') === 'true') : true

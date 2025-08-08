@@ -1,6 +1,6 @@
 'use client'
 
-import { doc, updateDoc, collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore'
+import { doc, updateDoc, collection, addDoc, getDocs, query, where, serverTimestamp, FieldValue } from 'firebase/firestore'
 import { db } from './firebase'
 
 export interface Rating {
@@ -10,7 +10,7 @@ export interface Rating {
   listingId: string
   rating: number // 1-5 stars
   comment?: string
-  createdAt: Date
+  createdAt: Date | FieldValue
 }
 
 // Calculate precise seller rating based on all ratings
@@ -66,7 +66,7 @@ export const submitRating = async (
       listingId,
       rating,
       comment: comment || '',
-      createdAt: serverTimestamp() as any
+      createdAt: serverTimestamp() as FieldValue
     }
 
     await addDoc(collection(db, 'ratings'), newRating)

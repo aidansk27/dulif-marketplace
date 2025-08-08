@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore'
+import { Timestamp, FieldValue } from 'firebase/firestore'
 import type { Category, ListingStatus } from './constants'
 
 // Re-export types from constants
@@ -14,13 +14,11 @@ export interface User {
   rating: number
   ratingCount: number
   profileComplete: boolean
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp | FieldValue
+  updatedAt: Timestamp | FieldValue
 }
 
-export interface UserProfile extends Omit<User, 'uid'> {
-  // profileComplete is already inherited from User
-}
+export type UserProfile = Omit<User, 'uid'>
 
 // Listing types
 export interface Listing {
@@ -34,11 +32,11 @@ export interface Listing {
   imgURLs: string[]
   sellerId: string
   status: ListingStatus
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp | FieldValue
+  updatedAt: Timestamp | FieldValue
   // Optional fields for premium features
   boosted?: boolean
-  boostExpiresAt?: Timestamp
+  boostExpiresAt?: Timestamp | FieldValue
 }
 
 export interface CreateListingData {
@@ -59,7 +57,7 @@ export interface Chat {
   listingId: string
   members: string[]
   lastMessage: string
-  lastTime: Timestamp
+  lastTime: Timestamp | FieldValue
   sellerId: string
   buyerId: string
 }
@@ -68,7 +66,7 @@ export interface Message {
   id: string
   senderId: string
   body: string
-  createdAt: Timestamp
+  createdAt: Timestamp | FieldValue
   read?: boolean
 }
 
@@ -80,7 +78,7 @@ export interface Rating {
   listingId: string
   stars: number
   comment?: string
-  createdAt: Timestamp
+  createdAt: Timestamp | FieldValue
 }
 
 // Safe spot types (simplified)
@@ -91,8 +89,8 @@ export interface Boost {
   id: string
   listingId: string
   userId: string
-  expiresAt: Timestamp
-  createdAt: Timestamp
+  expiresAt: Timestamp | FieldValue
+  createdAt: Timestamp | FieldValue
 }
 
 export interface CourierRequest {
@@ -102,7 +100,7 @@ export interface CourierRequest {
   toAddress: string
   status: 'pending' | 'accepted' | 'in_transit' | 'delivered' | 'cancelled'
   fee: number
-  createdAt: Timestamp
+  createdAt: Timestamp | FieldValue
 }
 
 // Form types
