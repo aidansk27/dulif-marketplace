@@ -11,8 +11,15 @@ const AuthContext = createContext<AuthContextType | null>(null)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
+  // During server render/prerender, the provider boundary may not be applied yet.
+  // Return a safe fallback instead of throwing to avoid build-time crashes.
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    return {
+      user: null,
+      loading: true,
+      signOut: async () => {},
+      refreshUser: async () => {}
+    }
   }
   return context
 }

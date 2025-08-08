@@ -11,7 +11,10 @@ import {
 } from 'firebase/auth'
 import { doc, getDoc, setDoc, serverTimestamp, FieldValue } from 'firebase/firestore'
 import { auth, db } from './firebase'
-import { User } from './types'
+import type { PublicUser } from './types'
+import type { User } from './types'
+import type { User as FirebaseUser } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { BERKELEY_EMAIL_DOMAIN } from './constants'
 
 // Export auth instance for other components
@@ -200,3 +203,49 @@ export const updateUserProfile = async (uid: string, updates: Partial<User>): Pr
     updatedAt: serverTimestamp()
   }, { merge: true })
 }
+
+// Email/Password Authentication helpers
+export const signUpEmailPassword = async (
+  email: string,
+  password: string,
+  opts?: { displayName?: string }
+): Promise<FirebaseUser> => {
+  const cred = await createUserWithEmailAndPassword(auth, email, password)
+  if (opts?.displayName) {
+    await updateProfile(cred.user, { displayName: opts.displayName })
+  }
+  // Write PublicUser document
+  const userDocRef = doc(db, 'users', cred.user.uid)
+  const publicUser: PublicUser = {
+    uid: cred.user.uid,
+    email: cred.user.email || email,
+    createdAt: Date.now(),
+    displayName: opts?.displayName,
+    photoURL: cred.user.photoURL || undefined
+  }
+  await setDoc(userDocRef, { ...publicUser, createdAt: serverTimestamp() })
+
+  // Best-effort email verification
+  try {
+    await sendEmailVerification(cred.user)
+  } catch (_err) {
+    // non-fatal
+  }
+  return cred.user
+}
+
+export const signInEmailPassword = async (email: string, password: string): Promise<FirebaseUser> => {
+  const cred = await signInWithEmailAndPassword(auth, email, password)
+  return cred.user
+}
+
+export const signOutUser = async (): Promise<void> => {
+  await firebaseSignOut(auth)
+}
+
+export const waitForAuth = (): Promise<FirebaseUser | null> => new Promise((resolve) => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    unsub()
+    resolve(user)
+  })
+})

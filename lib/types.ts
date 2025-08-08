@@ -152,11 +152,20 @@ export interface NavbarProps {
   user: User | null
 }
 
-// API response types
-export interface ApiResponse<T = unknown> {
-  success: boolean
-  data?: T
+// API response types (kept minimal per app policy)
+export type ApiResponse<T = unknown> = {
+  data: T
   error?: string
+}
+
+// Public user profile stored in Firestore for lightweight reads
+export type PublicUser = {
+  uid: string
+  email: string
+  createdAt: number
+  displayName?: string
+  photoURL?: string
+  campus?: string
 }
 
 // Utility types
