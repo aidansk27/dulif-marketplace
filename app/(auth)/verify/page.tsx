@@ -1,3 +1,65 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { auth } from '@/lib/firebase';
+import { isSignInWithEmailLink, signInWithEmailLink, applyActionCode, reload } from 'firebase/auth';
+import { useAuth } from '@/contexts/AuthContext';
+
+export default function VerifyPage() {
+  const { refreshUser } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const href = typeof window !== 'undefined' ? window.location.href : '';
+        const url = new URL(href);
+        const mode = url.searchParams.get('mode');
+        const oobCode = url.searchParams.get('oobCode');
+
+        // Case A: Email-link sign-in
+        if (href && isSignInWithEmailLink(auth, href)) {
+          const stored = localStorage.getItem('emailForSignIn');
+          const email = stored || window.prompt('Confirm your email to finish sign-in');
+          if (!email) throw new Error('Email confirmation required.');
+          await signInWithEmailLink(auth, email, href);
+          localStorage.removeItem('emailForSignIn');
+        }
+
+        // Case B: Email verification flow (?mode=verifyEmail&oobCode=...)
+        if (mode === 'verifyEmail' && oobCode) {
+          await applyActionCode(auth, oobCode);
+          if (auth.currentUser) await reload(auth.currentUser);
+        }
+
+        // Refresh cookies/session so middleware sees the new state
+        await refreshUser();
+
+        // Hard redirect to the true homepage
+        window.location.href = '/';
+      } catch (e: any) {
+        console.error('Verify error', e);
+        setError(e?.message || 'Verification failed. Please try again.');
+      }
+    })();
+  }, [refreshUser]);
+
+  if (error) {
+    return (
+      <div style={{ padding: 24 }}>
+        <h1>Verification error</h1>
+        <p>{error}</p>
+        <a href="/login">Back to login</a>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: 24 }}>
+      <h1>Signing you in…</h1>
+      <p>Please wait a moment.</p>
+    </div>
+  );
+}
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
