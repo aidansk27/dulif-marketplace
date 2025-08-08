@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, addDoc, serverTimestamp, FieldValue } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { canRateSeller } from '@/lib/ratings'
 import type { Listing, User } from '@/lib/types'
@@ -13,7 +13,7 @@ interface PendingRating {
   buyerId: string
   listingTitle: string
   sellerName: string
-  createdAt: any
+  createdAt: Date | FieldValue | { toDate(): Date }
   reminded?: boolean
 }
 
@@ -172,14 +172,14 @@ export const useRatingPrompts = (userId: string | null) => {
     const oldestRating = pendingRatings
       .filter(rating => !rating.reminded)
       .sort((a, b) => {
-        const aTime = a.createdAt?.toDate?.() || new Date(0)
-        const bTime = b.createdAt?.toDate?.() || new Date(0)
+        const aTime = (a.createdAt as { toDate?: () => Date })?.toDate?.() || new Date(0)
+        const bTime = (b.createdAt as { toDate?: () => Date })?.toDate?.() || new Date(0)
         return aTime.getTime() - bTime.getTime()
       })[0]
 
     if (oldestRating) {
       // Check if enough time has passed (e.g., 24 hours)
-      const createdTime = oldestRating.createdAt?.toDate?.() || new Date()
+      const createdTime = (oldestRating.createdAt as { toDate?: () => Date })?.toDate?.() || new Date()
       const hoursSinceCreated = (Date.now() - createdTime.getTime()) / (1000 * 60 * 60)
       
       if (hoursSinceCreated >= 24) {
@@ -190,13 +190,15 @@ export const useRatingPrompts = (userId: string | null) => {
 
   useEffect(() => {
     fetchPendingRatings()
-  }, [userId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]) // fetchPendingRatings recreated on each render, but we only want to fetch when userId changes
 
   useEffect(() => {
     // Check for rating prompts when pending ratings change
     const timer = setTimeout(checkForRatingPrompts, 2000) // Delay to avoid interrupting user flow
     return () => clearTimeout(timer)
-  }, [pendingRatings])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingRatings]) // checkForRatingPrompts recreated on each render, but we only want to check when pendingRatings changes
 
   return {
     pendingRatings,
