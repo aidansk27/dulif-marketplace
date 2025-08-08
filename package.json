@@ -2,6 +2,27 @@
   "name": "dulif-marketplace",
   "version": "0.1.0",
   "private": true,
+  "description": "Buy, sell, and trade within the UC Berkeley community. Verified @berkeley.edu users only.",
+  "keywords": [
+    "marketplace",
+    "berkeley",
+    "uc berkeley",
+    "student marketplace",
+    "buy",
+    "sell",
+    "trade",
+    "campus",
+    "nextjs",
+    "firebase",
+    "typescript"
+  ],
+  "author": "DULIF Team",
+  "homepage": "https://dulif.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/dulif-marketplace.git"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
