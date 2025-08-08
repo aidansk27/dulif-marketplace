@@ -58,12 +58,40 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
       setCursorPosition({ x, y })
     }
 
-    // Initial position
-    moveToRandomItem()
+    const setInitialPositionOnAllTab = () => {
+      const viewportWidth = window.innerWidth
+      
+      // Calculate position for "All" tab
+      // The navigation bar is at top, then category tabs below it
+      // "All" is the first tab, positioned roughly at the left side
+      const navBarHeight = 64 // h-16 = 64px
+      const categoryTabsHeight = 50 // approximate height of category tabs
+      const allTabY = navBarHeight + categoryTabsHeight / 2 - 12 // center of "All" tab
+      
+      // Position "All" tab roughly where it appears (left side, accounting for max-width container)
+      const containerPadding = Math.max(16, (viewportWidth - 1280) / 2) // max-w-7xl centered
+      const allTabX = containerPadding + 40 // approximate position of "All" tab
+      
+      setCursorPosition({ x: allTabX, y: allTabY })
+    }
 
-    // Move every 2-4 seconds
-    const interval = setInterval(moveToRandomItem, 2000 + Math.random() * 2000)
-    return () => clearInterval(interval)
+    // Start on "All" tab
+    setInitialPositionOnAllTab()
+
+    // Move to random positions after initial delay
+    const initialTimeout = setTimeout(() => {
+      moveToRandomItem()
+    }, 1500) // Wait 1.5 seconds before first random move
+
+    // Set up interval for continued random movement
+    const interval = setInterval(() => {
+      moveToRandomItem()
+    }, 3000 + Math.random() * 2000) // Move every 3-5 seconds after initial move
+
+    return () => {
+      clearTimeout(initialTimeout)
+      clearInterval(interval)
+    }
   }, [showCursor, disableAnimations])
 
   return (
@@ -86,7 +114,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
               {/* Logo - explicit SVG as requested */}
               <div className="flex items-center">
-                <img src="/DULIFLOGOFAVICON.ico" alt="dulif logo" className="w-12 h-12 object-contain" />
+                <img src="/transdulif.svg" alt="dulif logo" className="w-12 h-12 object-contain" />
               </div>
 
               {/* Mock Profile */}

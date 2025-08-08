@@ -55,7 +55,7 @@ export const Logo = ({
           {!imageError ? (
             <div className="relative flex items-center justify-center">
               <Image
-                src="/DULIFLOGOFAVICON.ico"
+                src="/transdulif.svg"
                 alt="dulif logo"
                 width={parseInt(sizes.container.split('w-')[1].split(' ')[0]) * 4}
                 height={parseInt(sizes.container.split('h-')[1]) * 4}
