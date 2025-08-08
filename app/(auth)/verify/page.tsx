@@ -4,7 +4,10 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { EnvelopeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import { completeSignIn, sendMagicLink, isMagicLink } from '@/lib/auth'
+import { sendMagicLink } from '@/lib/auth'
+import { auth } from '@/lib/firebase'
+import { isSignInWithEmailLink, signInWithEmailLink, applyActionCode, reload } from 'firebase/auth'
+import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Logo } from '@/components/ui/Logo'
 import MockHomeBackground from '@/components/MockHomeBackground'
@@ -23,76 +26,32 @@ function VerifyPageContent() {
   const searchParams = useSearchParams()
   const { timeLeft, isActive, start, reset: _reset } = useCountdown(30)
   const MotionDiv = motion.div as React.ElementType
+  const { refreshUser } = useAuth()
 
   useEffect(() => {
     const handleSignIn = async () => {
       try {
-        const currentUrl = window.location.href
-        const currentHost = window.location.host
-        
-        // Use the correct URL based on environment
-        const configuredUrl = process.env.NODE_ENV === 'development' 
-          ? 'http://localhost:3001'
-          : process.env.NEXT_PUBLIC_APP_URL || 'https://dulif.com'
-        const configuredHost = new URL(configuredUrl).host
-        
-        // Debug info for troubleshooting
-        const debugData = {
-          currentHost,
-          configuredHost,
-          currentUrl,
-          isMagicLinkResult: isMagicLink(currentUrl),
-          emailInLocalStorage: localStorage.getItem('emailForSignIn'),
-          emailInSessionStorage: sessionStorage.getItem('emailForSignIn'),
-          searchParams: Object.fromEntries(searchParams.entries())
+        const href = window.location.href
+        // Case A: Email-link sign in
+        if (isSignInWithEmailLink(auth, href)) {
+          const stored = localStorage.getItem('emailForSignIn')
+          const email = stored || window.prompt('Confirm your email')
+          if (!email) throw new Error('Email confirmation required.')
+          await signInWithEmailLink(auth, email, href)
+          localStorage.removeItem('emailForSignIn')
         }
-        setDebugInfo(debugData)
-        
-        console.log('🔍 Verify page debug info:', debugData)
-        
-        // Only redirect if we're in production and hosts don't match
-        if (process.env.NODE_ENV === 'production' && currentHost !== configuredHost) {
-          console.log('🔄 Redirecting to canonical host:', configuredHost)
-          const canonicalUrl = new URL(currentUrl)
-          canonicalUrl.host = configuredHost
-          window.location.href = canonicalUrl.toString()
-          return
+
+        // Case B: Email verification (?mode=verifyEmail&oobCode=...)
+        const url = new URL(href)
+        const mode = url.searchParams.get('mode')
+        const oobCode = url.searchParams.get('oobCode')
+        if (mode === 'verifyEmail' && oobCode) {
+          await applyActionCode(auth, oobCode)
+          if (auth.currentUser) await reload(auth.currentUser)
         }
-        
-        // Check if this is a magic link by looking for Firebase auth parameters
-        const urlParams = new URLSearchParams(window.location.search)
-        const hasAuthParams = urlParams.has('apiKey') && urlParams.has('oobCode')
-        
-        if (hasAuthParams && isMagicLink(currentUrl)) {
-          console.log('🔗 Processing magic link...')
-          
-          // Complete the sign-in with Firebase Auth
-          const user = await completeSignIn(currentUrl)
-          
-          console.log('✅ Magic link sign-in successful:', user.email)
-          
-          // Small delay to ensure auth context and cookies are updated
-          await new Promise(resolve => setTimeout(resolve, 500))
-          
-          // Check if user needs to complete profile setup
-          if (!user.firstName || !user.lastName || !user.profileComplete) {
-            router.push('/profile-setup')
-          } else {
-            // Redirect to protected homepage (marketplace) with a hard refresh to ensure middleware sees the cookies
-            window.location.href = '/'
-          }
-        } else {
-          // Not a magic link, show waiting message
-          const storedEmail = localStorage.getItem('emailForSignIn') || sessionStorage.getItem('emailForSignIn')
-          if (storedEmail) {
-            setEmail(storedEmail)
-          } else {
-            // No stored email, redirect to signup
-            router.push('/signup')
-            return
-          }
-          setIsLoading(false)
-        }
+
+        await refreshUser()
+        window.location.href = '/'
       } catch (error: unknown) {
         console.error('Sign-in error:', error)
         const err = error as { message?: string; code?: string }

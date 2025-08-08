@@ -8,7 +8,8 @@ import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { TermsModal } from '@/components/TermsModal'
 import { auth, db } from '@/lib/firebase'
-import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, sendEmailVerification, setPersistence } from 'firebase/auth'
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
+import { actionCodeSettings } from '@/lib/auth'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { ChevronLeftIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'
 
@@ -60,10 +61,9 @@ export default function SignupPasswordPage() {
 
     setIsLoading(true)
     try {
-      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
-      const userCred = await createUserWithEmailAndPassword(auth, email, password)
-      await sendEmailVerification(userCred.user)
-      await setDoc(doc(db, 'users', userCred.user.uid), {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password)
+      await sendEmailVerification(user, actionCodeSettings)
+      await setDoc(doc(db, 'users', user.uid), {
         email,
         firstName: '',
         lastName: '',
@@ -74,7 +74,8 @@ export default function SignupPasswordPage() {
         updatedAt: serverTimestamp(),
         profileComplete: false,
       })
-      router.push('/profile-setup')
+      localStorage.setItem('emailForSignIn', email)
+      router.push('/verify')
     } catch (err: unknown) {
       const error = err as { code?: string }
       if (error?.code === 'auth/email-already-in-use') setError('Email already registered. Please log in instead.')

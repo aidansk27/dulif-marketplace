@@ -17,6 +17,12 @@ import type { User as FirebaseUser } from 'firebase/auth'
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { BERKELEY_EMAIL_DOMAIN } from './constants'
 
+// Public action code settings used for email verification links
+export const actionCodeSettings: ActionCodeSettings = {
+  url: `${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/verify`,
+  handleCodeInApp: true,
+}
+
 // Export auth instance for other components
 export { auth }
 
@@ -45,28 +51,25 @@ export const sendMagicLink = async (email: string, rememberMe: boolean = false):
   await setPersistence(auth, persistence)
 
   // Use the correct URL based on environment
-  const baseUrl = process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:3001'
-    : process.env.NEXT_PUBLIC_APP_URL || 'https://dulif.com'
-    
-  const actionCodeSettings: ActionCodeSettings = {
-    url: `${baseUrl}/verify`,
-    handleCodeInApp: true
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '')
+  const localActionSettings: ActionCodeSettings = {
+    url: `${baseUrl || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/verify`,
+    handleCodeInApp: true,
   }
 
   // Include dynamicLinkDomain only if provided
   if (process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK_DOMAIN) {
-    actionCodeSettings.dynamicLinkDomain = process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK_DOMAIN
+    localActionSettings.dynamicLinkDomain = process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK_DOMAIN
   }
 
   console.log('📧 Sending magic link with settings:', {
-    url: actionCodeSettings.url,
-    host: new URL(actionCodeSettings.url).host,
+    url: localActionSettings.url,
+    host: new URL(localActionSettings.url as string).host,
     rememberMe
   })
 
   try {
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+    await sendSignInLinkToEmail(auth, email, localActionSettings)
     
     // Save email to storage based on Remember Me choice
     const storage = rememberMe ? localStorage : sessionStorage
