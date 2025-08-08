@@ -94,7 +94,7 @@ export default function SignupPage() {
                   Enter your Berkeley email address:
                 </label>
                 <div className="relative">
-                  <div className="flex items-center border-2 border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#FDB515]/20 focus-within:border-[#FDB515] bg-card transition-all duration-200">
+                  <div className="flex items-center border-2 border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#FDB515]/30 focus-within:border-[#FDB515] focus-within:shadow-lg focus-within:shadow-[#FDB515]/40 bg-card transition-all duration-200">
                     <input
                       type="text"
                       value={netId}
