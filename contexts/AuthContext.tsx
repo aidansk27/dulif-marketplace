@@ -42,9 +42,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         Cookies.set('firebase-auth', 'true', { expires: 30 })
         const isComplete = !!(userData.firstName && userData.lastName)
         Cookies.set('profile_complete', isComplete.toString(), { expires: 30 })
+        const domain = (userData.email || '').split('@')[1] || ''
+        Cookies.set('email_domain', domain, { expires: 30 })
       } else {
         Cookies.remove('firebase-auth')
         Cookies.remove('profile_complete')
+        Cookies.remove('email_domain')
       }
     } catch (error) {
       console.error('Error refreshing user:', error)

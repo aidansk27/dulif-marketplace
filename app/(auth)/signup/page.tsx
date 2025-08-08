@@ -79,12 +79,8 @@ export default function SignupPage() {
             {/* Logo */}
             <div className="text-center mb-6">
               <Logo size="xl" showText={false} />
-              <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
-                Berkeley Student Marketplace
-              </h2>
-              <p className="text-muted text-base">
-                Secure marketplace exclusively for Berkeley students
-              </p>
+              <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">Berkeley Student Marketplace</h2>
+              <p className="text-muted text-base">Secure marketplace exclusively for Berkeley students</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,7 +124,7 @@ export default function SignupPage() {
                 disabled={!netId || isLoading}
                 loading={isLoading}
                 variant="primary"
-                className="w-full text-lg py-4 font-semibold !bg-gradient-to-r !from-[#003262] !to-[#002148] !text-white hover:!from-[#002A54] hover:!to-[#001A3A] flex items-center justify-center"
+                className="w-full text-lg py-4 font-semibold flex items-center justify-center"
                 size="lg"
               >
                 {isLoading ? 'Loading...' : (<><span>Next</span><ChevronRightIcon className="w-5 h-5 ml-2" /></>)}

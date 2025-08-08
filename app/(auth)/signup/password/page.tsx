@@ -61,6 +61,10 @@ export default function SignupPasswordPage() {
 
     setIsLoading(true)
     try {
+      if (!email.endsWith('@berkeley.edu')) {
+        setError('Use your @berkeley.edu email')
+        return
+      }
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
       await sendEmailVerification(user, actionCodeSettings)
       await setDoc(doc(db, 'users', user.uid), {

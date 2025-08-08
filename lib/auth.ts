@@ -1,3 +1,12 @@
+// Export only actionCodeSettings. The auth instance must come from '@/lib/firebase'.
+// Type-only import; ensure no duplicate identifier clashes
+import type { ActionCodeSettings as FirebaseActionCodeSettings } from 'firebase/auth'
+
+export const actionCodeSettings: FirebaseActionCodeSettings = {
+  url: `${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/verify`,
+  handleCodeInApp: true,
+}
+
 import {
   sendSignInLinkToEmail,
   signInWithEmailLink,
@@ -18,10 +27,7 @@ import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification, s
 import { BERKELEY_EMAIL_DOMAIN } from './constants'
 
 // Public action code settings used for email verification links
-export const actionCodeSettings: ActionCodeSettings = {
-  url: `${process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/verify`,
-  handleCodeInApp: true,
-}
+// (Consolidated above)
 
 // Export auth instance for other components
 export { auth }
@@ -52,7 +58,7 @@ export const sendMagicLink = async (email: string, rememberMe: boolean = false):
 
   // Use the correct URL based on environment
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '')
-  const localActionSettings: ActionCodeSettings = {
+  const localActionSettings: FirebaseActionCodeSettings = {
     url: `${baseUrl || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/verify`,
     handleCodeInApp: true,
   }

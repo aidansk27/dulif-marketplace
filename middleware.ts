@@ -25,10 +25,11 @@ export function middleware(request: NextRequest) {
   // Get auth and profile completion status from cookies
   const isAuthenticated = request.cookies.get('firebase-auth')?.value === 'true'
   const isProfileComplete = request.cookies.get('profile_complete')?.value === 'true'
+  const emailDomain = request.cookies.get('email_domain')?.value
   
-  // If not authenticated, redirect to signup
-  if (!isAuthenticated) {
-    return NextResponse.redirect(new URL('/signup', request.url))
+  // If not authenticated or not Berkeley domain, redirect to login
+  if (!isAuthenticated || emailDomain !== 'berkeley.edu') {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
   
   // If authenticated but profile not complete and not on profile-setup

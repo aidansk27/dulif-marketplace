@@ -101,11 +101,13 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
         <div className="absolute inset-0 prestigious-bg opacity-30"></div>
 
         {/* Enhanced Background Effects */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-[#1a4b7a] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-          <div className="absolute top-60 right-20 w-80 h-80 bg-[#003262] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-[#1a4b7a] rounded-full mix-blend-multiply filter blur-3xl opacity-25 animate-pulse" style={{ animationDelay: '4s' }}></div>
-        </div>
+        {!disableAnimations && (
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-96 h-96 bg-[#1a4b7a] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+            <div className="absolute top-60 right-20 w-80 h-80 bg-[#003262] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-[#1a4b7a] rounded-full mix-blend-multiply filter blur-3xl opacity-25 animate-pulse" style={{ animationDelay: '4s' }}></div>
+          </div>
+        )}
 
         {/* Mock Homepage Layer */}
         <div className={`absolute inset-0 ${isBlurred ? 'blur-sm opacity-40' : 'opacity-100'} overflow-hidden transition-all duration-500 pointer-events-none`}>
@@ -141,17 +143,41 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {imageSources.map((item, index) => {
-                const Component = disableAnimations ? 'div' : MotionDiv
-                const animationProps = disableAnimations ? {} : {
-                  initial: { opacity: 0, y: 20 },
-                  animate: { opacity: 1, y: 0 },
-                  transition: { delay: index * 0.05 }
+                if (disableAnimations) {
+                  return (
+                    <div key={item.src} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pointer-events-none">
+                      <div className="relative h-40 w-full">
+                        {/* TODO: Replace with next/image for better performance */}
+                        <img src={item.src} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+                        {(showTitles || showRatings) && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent text-white p-2 text-xs">
+                            <div className="flex items-center justify-between">
+                              {showTitles && <span className="font-semibold truncate mr-2">{item.title}</span>}
+                              {showRatings && (
+                                <span className="bg-yellow-500 text-black font-semibold px-1.5 py-0.5 rounded">
+                                  {ratings[index].toFixed(1)}★
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-semibold text-primary">${item.price}</span>
+                          <span className="text-gray-500">{item.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
                 }
-                
+
                 return (
-                  <Component
+                  <MotionDiv
                     key={item.src}
-                    {...animationProps}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
                     className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pointer-events-none"
                   >
                   <div className="relative h-40 w-full">
@@ -176,7 +202,7 @@ export function MockHomeBackground({ isBlurred = true, showTitles = true, showRa
                       <span className="text-gray-500">{item.category}</span>
                     </div>
                   </div>
-                  </Component>
+                  </MotionDiv>
                 )
               })}
             </div>

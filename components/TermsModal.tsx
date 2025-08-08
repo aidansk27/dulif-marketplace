@@ -63,8 +63,8 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                   onClick={() => setActiveTab('terms')}
                   className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'terms'
-                      ? '!bg-gradient-to-r !from-[#003262] !to-[#002148] !text-white shadow-lg shadow-primary/25 !border-[#003262]'
-                      : '!text-[#003262] !bg-white hover:!bg-gradient-to-r hover:!from-[#003262] hover:!to-[#002148] hover:!text-white !border-[#003262]/30 hover:!border-[#003262]'
+                      ? 'bg-primary text-white border border-primary shadow'
+                      : 'bg-white text-primary border border-primary/40 hover:bg-primary hover:text-white hover:border-primary'
                   }`}
                 >
                   Terms of Service
@@ -73,8 +73,8 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                   onClick={() => setActiveTab('privacy')}
                   className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'privacy'
-                      ? '!bg-gradient-to-r !from-[#003262] !to-[#002148] !text-white shadow-lg shadow-primary/25 !border-[#003262]'
-                      : '!text-[#003262] !bg-white hover:!bg-gradient-to-r hover:!from-[#003262] hover:!to-[#002148] hover:!text-white !border-[#003262]/30 hover:!border-[#003262]'
+                      ? 'bg-primary text-white border border-primary shadow'
+                      : 'bg-white text-primary border border-primary/40 hover:bg-primary hover:text-white hover:border-primary'
                   }`}
                 >
                   Privacy Policy
@@ -288,11 +288,7 @@ export const TermsModal = ({ isOpen, onClose, defaultTab = 'terms' }: TermsModal
                 <div className="text-sm text-muted">
                   Need help? Email <a href="mailto:team@dulif.com" className="text-primary hover:underline">team@dulif.com</a>
                 </div>
-                <Button
-                  onClick={onClose}
-                  variant="primary"
-                  className="px-6 !bg-gradient-to-r !from-[#003262] !to-[#002148] !text-white !border-[#003262] hover:!from-[#002A54] hover:!to-[#001A3A]"
-                >
+                <Button onClick={onClose} variant="primary" className="px-6">
                   Back to Sign Up
                 </Button>
               </div>
