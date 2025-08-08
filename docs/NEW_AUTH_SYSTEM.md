@@ -53,7 +53,7 @@
 ### **Development Mode:**
 - Codes appear in browser alerts for testing
 - No actual emails sent during development
-- Production will use real email service (SendGrid/Mailgun)
+- Production uses Firebase Auth for email delivery
 
 ---
 

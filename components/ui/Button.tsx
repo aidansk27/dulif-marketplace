@@ -17,7 +17,7 @@ export const Button = ({
   className = '',
   ...props
 }: ButtonProps) => {
-  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0'
+  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0'
   
   const variantClasses = {
     primary: 'bg-gradient-to-r from-primary to-primary-700 text-white hover:from-primary-600 hover:to-primary-800 shadow-xl shadow-primary/25 border border-primary-600/20',

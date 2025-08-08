@@ -1,13 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { collection, query, orderBy, limit, getDocs, where, startAfter, QueryDocumentSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRatingPrompts } from '@/hooks/useRatingPrompts'
 import { ListingCard } from '@/components/ListingCard'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
-import type { Listing, User } from '@/lib/types'
+import { RatingPromptModal } from '@/components/RatingPromptModal'
+import type { Listing, User, Category } from '@/lib/types'
 
 export default function HomePage() {
   const [listings, setListings] = useState<Listing[]>([])
@@ -17,30 +21,44 @@ export default function HomePage() {
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [filter, setFilter] = useState<'all' | 'boosted'>('all')
+  const { user } = useAuth()
+  const { currentPrompt, closeRatingPrompt, removePendingRating } = useRatingPrompts(user?.uid || null)
+  const searchParams = useSearchParams()
 
   const LISTINGS_PER_PAGE = 20
+
+  // Get filter parameters from URL
+  const searchQuery = searchParams.get('search') || ''
+  const categoryFilter = searchParams.get('category') as Category | null
+  const categoriesFilter = searchParams.get('categories')?.split(',') as Category[] | null
+  const minPrice = parseFloat(searchParams.get('minPrice') || '0')
+  const maxPrice = parseFloat(searchParams.get('maxPrice') || '999999')
 
   const fetchListings = async (isLoadMore = false) => {
     const loadingState = isLoadMore ? setLoadingMore : setLoading
     loadingState(true)
 
     try {
-      let listingsQuery = query(
-        collection(db, 'listings'),
+      // Start with basic query
+      const constraints: any[] = [
         where('status', '==', 'active'),
         orderBy('createdAt', 'desc'),
         limit(LISTINGS_PER_PAGE)
-      )
+      ]
 
-      if (filter === 'boosted') {
-        listingsQuery = query(
-          collection(db, 'listings'),
-          where('status', '==', 'active'),
-          where('boosted', '==', true),
-          orderBy('createdAt', 'desc'),
-          limit(LISTINGS_PER_PAGE)
-        )
+      // Add category filter
+      if (categoryFilter) {
+        constraints.unshift(where('category', '==', categoryFilter))
+      } else if (categoriesFilter && categoriesFilter.length > 0) {
+        constraints.unshift(where('category', 'in', categoriesFilter.slice(0, 10))) // Firestore 'in' limit is 10
       }
+
+      // Add boosted filter
+      if (filter === 'boosted') {
+        constraints.unshift(where('boosted', '==', true))
+      }
+
+      let listingsQuery = query(collection(db, 'listings'), ...constraints)
 
       if (isLoadMore && lastDoc) {
         listingsQuery = query(
@@ -50,7 +68,7 @@ export default function HomePage() {
       }
 
       const querySnapshot = await getDocs(listingsQuery)
-      const newListings: Listing[] = []
+      let newListings: Listing[] = []
       const sellerIds = new Set<string>()
 
       querySnapshot.forEach((doc) => {
@@ -61,6 +79,28 @@ export default function HomePage() {
         } as Listing
         newListings.push(listing)
         sellerIds.add(listing.sellerId)
+      })
+
+      // Client-side filtering for search and price range
+      newListings = newListings.filter(listing => {
+        // Search filter
+        if (searchQuery) {
+          const searchLower = searchQuery.toLowerCase()
+          const matchesTitle = listing.title.toLowerCase().includes(searchLower)
+          const matchesDescription = listing.description.toLowerCase().includes(searchLower)
+          const matchesCategory = listing.category.toLowerCase().includes(searchLower)
+          
+          if (!matchesTitle && !matchesDescription && !matchesCategory) {
+            return false
+          }
+        }
+
+        // Price range filter
+        if (listing.price < minPrice || listing.price > maxPrice) {
+          return false
+        }
+
+        return true
       })
 
       // Fetch seller data
@@ -101,8 +141,10 @@ export default function HomePage() {
   }
 
   useEffect(() => {
+    setLastDoc(null) // Reset pagination when filters change
+    setHasMore(true)
     fetchListings()
-  }, [filter])
+  }, [filter, searchQuery, categoryFilter, categoriesFilter, minPrice, maxPrice])
 
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
@@ -212,6 +254,22 @@ export default function HomePage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Rating Prompt Modal */}
+      {currentPrompt && (
+        <RatingPromptModal
+          isOpen={true}
+          onClose={closeRatingPrompt}
+          listing={currentPrompt.listing}
+          seller={currentPrompt.seller}
+          buyerId={user?.uid || ''}
+          onRatingSubmitted={() => {
+            if (currentPrompt.pendingRating.id) {
+              removePendingRating(currentPrompt.pendingRating.id)
+            }
+          }}
+        />
       )}
     </div>
   )

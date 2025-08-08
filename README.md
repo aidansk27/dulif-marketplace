@@ -1,21 +1,24 @@
-# 🐻 DULIF Marketplace
+# 🐻 dulif Marketplace
 
-The trusted marketplace for UC Berkeley students to buy and sell items safely on campus.
+The trusted marketplace for Berkeley students to buy and sell items safely on campus.
 
 ## ✨ Features
 
 ### 🔐 Authentication & Security
-- **Passwordless Authentication**: Magic link sign-in with Berkeley email verification
-- **Profile Verification**: Only @berkeley.edu emails allowed
+- **Two-Step Signup**: Modern email + password authentication flow
+- **Berkeley Email Verification**: Only @berkeley.edu emails allowed with email verification
+- **Profile Verification**: Required profile completion after signup
 - **Safe Meeting Spots**: Interactive map with recommended campus locations
 - **User Ratings**: Community-driven seller reputation system
 
 ### 📱 Core Functionality
-- **Modern UI**: Berkeley-branded design with Aeonik fonts and smooth animations
+- **Modern UI**: Berkeley-branded design with Berkeley Blue background and California Gold accents
+- **Interactive Background**: Animated cursor movement on blurred marketplace preview
 - **6-Step Listing Creation**: Intuitive wizard with image upload and compression
 - **Real-time Chat**: Instant messaging between buyers and sellers
 - **Advanced Search & Filters**: Category-based browsing with price filters
 - **Responsive Design**: Mobile-first approach with PWA support
+- **Password Visibility Toggle**: Eye icons for secure password entry
 
 ### 🚀 Premium Features (Ready for Implementation)
 - **Listing Boosts**: 48-hour featured placement
@@ -61,7 +64,7 @@ The trusted marketplace for UC Berkeley students to buy and sell items safely on
 
 3. **Firebase Configuration**
    - Create a Firebase project
-   - Enable Authentication with Email/Link provider
+   - Enable Authentication with Email/Password provider and email verification
    - Set up Firestore with the following collections:
      - `users` - User profiles
      - `listings` - Marketplace items
@@ -81,8 +84,10 @@ The trusted marketplace for UC Berkeley students to buy and sell items safely on
 dulif-marketplace/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/            # Authentication pages
-│   │   ├── signup/        # Email entry + animated placeholders
-│   │   └── verify/        # Magic link verification
+│   │   ├── signup/        # Two-step signup flow
+│   │   │   ├── page.tsx   # Email entry with animated placeholders
+│   │   │   └── password/  # Password creation with visibility toggle
+│   │   └── verify/        # Email verification flow
 │   ├── (protected)/       # Protected routes
 │   │   ├── create/        # 6-step listing wizard
 │   │   ├── listing/[id]/  # Listing detail with chat
@@ -112,10 +117,17 @@ dulif-marketplace/
 ## 🔥 Key Features Implementation
 
 ### Authentication Flow
-1. **Email Entry**: Animated NetID input with Berkeley domain
-2. **Magic Link**: Passwordless authentication via email
-3. **Profile Setup**: Required first-time user information
-4. **Route Protection**: Middleware enforces auth + profile completion
+1. **Email Entry**: Animated NetID input with Berkeley domain and golden focus border
+2. **Password Creation**: Secure password with validation tooltip and visibility toggle
+3. **Email Verification**: Firebase email verification with confirmation link
+4. **Profile Setup**: Required first-time user information
+5. **Route Protection**: Middleware enforces auth + profile completion
+
+### Signup Experience
+- **Step 1**: Berkeley email entry with animated placeholders and smooth transitions
+- **Step 2**: Password creation with real-time validation and eye toggle for visibility
+- **Background**: Blurred marketplace preview with animated cursor browsing listings
+- **Design**: Clean Berkeley Blue background with California Gold accent on active category tab
 
 ### Listing Creation (6 Steps)
 1. **Basic Info**: Title and description with validation
@@ -150,7 +162,8 @@ npm run test:e2e:headless
 ```
 
 ### Test Coverage
-- Authentication flow: Signup → Verify → Profile Setup
+- Authentication flow: Email Entry → Password Creation → Email Verification → Profile Setup
+- Two-step signup with password validation and visibility toggle
 - Listing creation and management
 - Chat functionality
 - Rating system
@@ -209,10 +222,11 @@ The app includes PWA configuration for:
 ## 🎨 Design System
 
 ### Colors
-- **Primary**: #003262 (Berkeley Blue)
-- **Secondary**: #FDB515 (California Gold)
-- **Background**: #FFFFFF
-- **Text**: #1E1E1E
+- **Primary**: #003262 (Berkeley Blue) - Main background and buttons
+- **Secondary**: #FDB515 (California Gold) - Focus borders and active states
+- **Background**: #FFFFFF - Card backgrounds
+- **Text**: #1E1E1E - Primary text
+- **Muted**: #6B7280 - Secondary text
 
 ### Typography
 - **Primary Font**: Aeonik (with Inter fallback)
@@ -258,4 +272,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Built with ❤️ for the UC Berkeley community**
+**Built with ❤️ for the Berkeley community**
+
+## 🎯 Recent Updates
+
+### v2.0 - Modern Authentication Flow
+- ✅ Two-step signup process (email → password)
+- ✅ Password visibility toggle with eye icons
+- ✅ Real-time password validation with tooltip
+- ✅ Smooth page transitions without background refresh
+- ✅ Berkeley Blue background with California Gold accents
+- ✅ Animated cursor on blurred marketplace preview
+- ✅ Go back navigation between signup steps
+- ✅ Clean card design without glow effects
+
+### Design Improvements
+- ✅ Removed "UC" prefix, now just "Berkeley"
+- ✅ Golden focus borders on form inputs
+- ✅ Simplified privacy messaging
+- ✅ Category tab highlighting in background preview

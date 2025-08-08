@@ -137,9 +137,11 @@ body {
 
 .berkeley-glow {
   box-shadow: 
-    0 0 0 1px rgba(253, 181, 21, 0.2),
-    0 4px 20px rgba(253, 181, 21, 0.15),
-    0 8px 40px rgba(0, 50, 98, 0.1);
+    0 0 0 2px rgba(253, 181, 21, 0.4),
+    0 0 0 3px rgba(253, 181, 21, 0.2),
+    0 4px 20px rgba(253, 181, 21, 0.25),
+    0 8px 40px rgba(0, 50, 98, 0.15),
+    0 16px 60px rgba(253, 181, 21, 0.1);
 }
 
 /* Modern button hover effects */

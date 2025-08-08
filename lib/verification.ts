@@ -1,76 +1,79 @@
 'use client'
 
-import { collection, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
-import { db } from './firebase'
+import { Timestamp, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth'
+import { db, auth } from './firebase'
+import { sendVerificationEmail } from './emailService'
+import { isValidBerkeleyEmail } from './auth'
 
-// Generate a random 6-digit code
-export const generateVerificationCode = (): string => {
+const CODES_COLLECTION = 'emailVerificationCodes'
+const CODE_TTL_MINUTES = 10
+const MAX_ATTEMPTS = 3
+
+const generateSixDigitCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
-// Store verification code in Firestore
-export const storeVerificationCode = async (email: string, code: string): Promise<void> => {
-  const codeDoc = doc(db, 'verificationCodes', email)
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes from now
-  
-  await setDoc(codeDoc, {
-    code,
+export interface GenerateCodeResult {
+  email: string
+  code: string
+  expiresAt: Timestamp
+}
+
+export const generateAndSendCode = async (email: string, rememberMe: boolean, firstName?: string): Promise<GenerateCodeResult> => {
+  if (!isValidBerkeleyEmail(email)) {
+    throw new Error('Must use a Berkeley email address')
+  }
+
+  const code = generateSixDigitCode()
+  const expiresAt = Timestamp.fromDate(new Date(Date.now() + CODE_TTL_MINUTES * 60 * 1000))
+
+  const ref = doc(db, CODES_COLLECTION, email)
+  await setDoc(ref, {
     email,
+    code,
+    attempts: 0,
+    createdAt: Timestamp.now(),
     expiresAt,
-    createdAt: new Date(),
-    attempts: 0
+    rememberMe,
   })
+
+  await sendVerificationEmail({ userEmail: email, verificationCode: code, firstName })
+
+  return { email, code, expiresAt }
 }
 
-// Verify the code
-export const verifyCode = async (email: string, inputCode: string): Promise<boolean> => {
-  const codeDoc = doc(db, 'verificationCodes', email)
-  const codeSnap = await getDoc(codeDoc)
-  
-  if (!codeSnap.exists()) {
-    throw new Error('Verification code not found or expired')
+export const verifyCodeAndCreateAccount = async (email: string, code: string): Promise<void> => {
+  const ref = doc(db, CODES_COLLECTION, email)
+  const snap = await getDoc(ref)
+  if (!snap.exists()) throw new Error('No verification request found. Please request a new code.')
+
+  const data = snap.data() as any
+  if (data.attempts >= MAX_ATTEMPTS) throw new Error('Too many attempts. Please request a new code in a few minutes.')
+
+  // Expiration check
+  const now = Timestamp.now()
+  if (data.expiresAt && data.expiresAt.toMillis() < now.toMillis()) {
+    throw new Error('This code has expired. Please request a new one.')
   }
-  
-  const data = codeSnap.data()
-  const now = new Date()
-  
-  // Check if expired
-  if (data.expiresAt.toDate() < now) {
-    await deleteDoc(codeDoc)
-    throw new Error('Verification code expired')
+
+  if (data.code !== code) {
+    await updateDoc(ref, { attempts: (data.attempts || 0) + 1 })
+    throw new Error('Invalid code. Please double-check and try again.')
   }
-  
-  // Check attempts
-  if (data.attempts >= 3) {
-    await deleteDoc(codeDoc)
-    throw new Error('Too many incorrect attempts')
+
+  // At this point, code is valid → create or sign in a user with a random strong password
+  const randomPassword = crypto.getRandomValues(new Uint32Array(4)).join('-')
+
+  // Persistence based on rememberMe
+  await setPersistence(auth, data.rememberMe ? browserLocalPersistence : browserSessionPersistence)
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, randomPassword)
+  } catch (err: any) {
+    // If the user already exists, we can ignore account-exists error and continue
+    if (err?.code !== 'auth/email-already-in-use') throw err
   }
-  
-  // Check if code matches
-  if (data.code !== inputCode) {
-    // Increment attempts
-    await setDoc(codeDoc, { ...data, attempts: data.attempts + 1 }, { merge: true })
-    throw new Error('Invalid verification code')
-  }
-  
-  // Success - delete the code
-  await deleteDoc(codeDoc)
-  return true
 }
 
-// Send verification email (mock function - in production you'd use a real email service)
-export const sendVerificationEmail = async (email: string, code: string): Promise<void> => {
-  // In a real app, you'd use SendGrid, Mailgun, or similar
-  // For now, we'll simulate sending and log the code
-  console.log(`Verification code for ${email}: ${code}`)
-  
-  // Store the code in Firestore
-  await storeVerificationCode(email, code)
-  
-  // In development, we'll show an alert with the code
-  if (process.env.NODE_ENV === 'development') {
-    setTimeout(() => {
-      alert(`Development Mode: Your verification code is ${code}`)
-    }, 1000)
-  }
-}
+

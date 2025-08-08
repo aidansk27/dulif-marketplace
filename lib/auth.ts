@@ -3,12 +3,19 @@ import {
   signInWithEmailLink,
   isSignInWithEmailLink,
   signOut as firebaseSignOut,
-  ActionCodeSettings
+  ActionCodeSettings,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  getAuth
 } from 'firebase/auth'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { User } from './types'
 import { BERKELEY_EMAIL_DOMAIN } from './constants'
+
+// Export auth instance for other components
+export { auth }
 
 // Auth helpers
 export const isValidBerkeleyEmail = (email: string): boolean => {
@@ -19,31 +26,50 @@ export const formatBerkeleyEmail = (netid: string): string => {
   return `${netid}@${BERKELEY_EMAIL_DOMAIN}`
 }
 
-// Send magic link to email
-export const sendMagicLink = async (email: string): Promise<void> => {
+// Check if URL is a magic link
+export const isMagicLink = (url: string): boolean => {
+  return isSignInWithEmailLink(auth, url)
+}
+
+// Send magic link to email with Remember Me option
+export const sendMagicLink = async (email: string, rememberMe: boolean = false): Promise<void> => {
   if (!isValidBerkeleyEmail(email)) {
     throw new Error('Must use a Berkeley email address')
   }
 
+  // Set persistence based on Remember Me choice
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence
+  await setPersistence(auth, persistence)
+
+  // Use the correct URL based on environment
+  const baseUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3001'
+    : process.env.NEXT_PUBLIC_APP_URL || 'https://dulif.com'
+    
   const actionCodeSettings: ActionCodeSettings = {
-    url: process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:3000/verify' 
-      : 'https://dulif.com/verify',
-    handleCodeInApp: true,
-    iOS: {
-      bundleId: 'com.dulif.marketplace'
-    },
-    android: {
-      packageName: 'com.dulif.marketplace'
-    },
-    dynamicLinkDomain: 'dulif.page.link'
+    url: `${baseUrl}/verify`,
+    handleCodeInApp: true
   }
+
+  // Include dynamicLinkDomain only if provided
+  if (process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK_DOMAIN) {
+    actionCodeSettings.dynamicLinkDomain = process.env.NEXT_PUBLIC_FIREBASE_DYNAMIC_LINK_DOMAIN
+  }
+
+  console.log('📧 Sending magic link with settings:', {
+    url: actionCodeSettings.url,
+    host: new URL(actionCodeSettings.url).host,
+    rememberMe
+  })
 
   try {
     await sendSignInLinkToEmail(auth, email, actionCodeSettings)
     
-    // Save email for sign-in completion
-    localStorage.setItem('emailForSignIn', email)
+    // Save email to storage based on Remember Me choice
+    const storage = rememberMe ? localStorage : sessionStorage
+    storage.setItem('emailForSignIn', email)
+    
+    console.log(`📧 Magic link sent to ${email} (Remember Me: ${rememberMe})`)
   } catch (error: any) {
     if (error.code === 'auth/invalid-email') {
       throw new Error('Please enter a valid email address')
@@ -56,96 +82,116 @@ export const sendMagicLink = async (email: string): Promise<void> => {
 }
 
 // Complete sign-in with magic link
-export const completeSignIn = async (): Promise<User> => {
-  if (!isSignInWithEmailLink(auth, window.location.href)) {
-    throw new Error('Invalid sign-in link')
+export const completeSignIn = async (url: string): Promise<User> => {
+  console.log('🔍 Checking magic link:', url)
+  
+  if (!isSignInWithEmailLink(auth, url)) {
+    console.error('❌ Not a valid sign-in link')
+    throw new Error('Invalid sign-in link. Please use the link from your email.')
   }
 
-  let email = localStorage.getItem('emailForSignIn')
+  // Read emailForSignIn from both storages
+  let email = localStorage.getItem('emailForSignIn') || sessionStorage.getItem('emailForSignIn')
+  const emailExisted = !!email
   
+  console.log('📧 Email from storage:', email, 'existed:', emailExisted)
+  
+  // If missing, prompt user for @berkeley.edu email (block until provided)
   if (!email) {
-    // Fallback: ask user for email if not found in localStorage
-    email = window.prompt('Please provide your email for confirmation')
+    console.log('🔍 No stored email, prompting user...')
+    do {
+      email = prompt('Please enter your @berkeley.edu email address to complete sign-in:')
+      if (!email) {
+        throw new Error('Email address is required to complete sign-in.')
+      }
+      if (!isValidBerkeleyEmail(email)) {
+        alert('Please enter a valid @berkeley.edu email address.')
+        email = null // Reset to continue loop
+      }
+    } while (!email)
   }
 
-  if (!email || !isValidBerkeleyEmail(email)) {
-    throw new Error('Valid Berkeley email required')
+  if (!isValidBerkeleyEmail(email)) {
+    console.error('❌ Invalid Berkeley email:', email)
+    throw new Error('Must use a valid @berkeley.edu email address.')
   }
 
-  const result = await signInWithEmailLink(auth, email, window.location.href)
-  
-  // Clean up
-  localStorage.removeItem('emailForSignIn')
-  
-  // Get or create user document
-  const user = await getOrCreateUser(result.user.uid, email)
-  
-  return user
+  try {
+    const result = await signInWithEmailLink(auth, email, url)
+    
+    // Clean up emailForSignIn from both storages
+    localStorage.removeItem('emailForSignIn')
+    sessionStorage.removeItem('emailForSignIn')
+    
+    // Get or create user document
+    const user = await getOrCreateUser(result.user.uid, email)
+    
+    console.log(`✅ Sign-in complete for ${email} (emailForSignIn existed: ${emailExisted})`)
+    return user
+  } catch (error: any) {
+    console.error('❌ Sign-in failed:', error.code, error.message)
+    throw error
+  }
 }
 
 // Get or create user document in Firestore
 export const getOrCreateUser = async (uid: string, email: string): Promise<User> => {
-  const userRef = doc(db, 'users', uid)
-  const userSnap = await getDoc(userRef)
-
+  const userDoc = doc(db, 'users', uid)
+  const userSnap = await getDoc(userDoc)
+  
   if (userSnap.exists()) {
-    return { uid, ...userSnap.data() } as User
+    return userSnap.data() as User
   }
-
+  
   // Create new user document
-  const newUser: Omit<User, 'uid'> = {
+  const newUser: User = {
+    uid,
     email,
     firstName: '',
     lastName: '',
-    photoURL: '',
-    rating: 0,
-    ratingCount: 0,
-    createdAt: serverTimestamp() as any,
-    updatedAt: serverTimestamp() as any,
+    createdAt: new Date(),
+    isVerified: true,
+    profileComplete: false
   }
-
-  await setDoc(userRef, newUser)
   
-  return { uid, ...newUser } as User
+  await setDoc(userDoc, {
+    ...newUser,
+    createdAt: serverTimestamp()
+  })
+  
+  return newUser
 }
 
-// Update user profile
-export const updateUserProfile = async (
-  uid: string, 
-  updates: Partial<Omit<User, 'uid' | 'createdAt' | 'updatedAt'>>
-): Promise<void> => {
-  const userRef = doc(db, 'users', uid)
+// Get current user
+export const getCurrentUser = async (): Promise<User | null> => {
+  const firebaseUser = auth.currentUser
+  if (!firebaseUser) return null
   
-  await setDoc(userRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  }, { merge: true })
+  const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+  if (!userDoc.exists()) return null
+  
+  return userDoc.data() as User
 }
 
 // Sign out
 export const signOut = async (): Promise<void> => {
   await firebaseSignOut(auth)
   
-  // Clear any stored data
+  // Clear any remaining localStorage items
   localStorage.removeItem('emailForSignIn')
-  localStorage.removeItem('profile_complete')
+  localStorage.removeItem('rememberMe')
 }
 
-// Get current user data
-export const getCurrentUser = async (): Promise<User | null> => {
-  const currentUser = auth.currentUser
-  
-  if (!currentUser) return null
-
-  const userRef = doc(db, 'users', currentUser.uid)
-  const userSnap = await getDoc(userRef)
-
-  if (!userSnap.exists()) return null
-
-  return { uid: currentUser.uid, ...userSnap.data() } as User
+// Check if user is remembered (has persistent session)
+export const isUserRemembered = (): boolean => {
+  return localStorage.getItem('firebase:authUser:' + auth.app.options.apiKey + ':[DEFAULT]') !== null
 }
 
-// Check if user profile is complete
-export const isProfileComplete = (user: User): boolean => {
-  return !!(user.firstName && user.lastName)
+// Update user profile
+export const updateUserProfile = async (uid: string, updates: Partial<User>): Promise<void> => {
+  const userDoc = doc(db, 'users', uid)
+  await setDoc(userDoc, {
+    ...updates,
+    updatedAt: serverTimestamp()
+  }, { merge: true })
 }

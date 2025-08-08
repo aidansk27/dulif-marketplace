@@ -1,7 +1,9 @@
 const withPWA = require('next-pwa')({
   dest: 'public',
-  register: true,
+  register: process.env.NODE_ENV === 'production', // Disable PWA in dev
   skipWaiting: true,
+  // Exclude /verify from precaching and runtime caching to avoid service worker intercepts on deep links
+  denylist: [/\/verify/],
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -46,6 +48,11 @@ const withPWA = require('next-pwa')({
           maxAgeSeconds: 24 * 60 * 60 // 24 hours
         }
       }
+    },
+    // Explicitly exclude /verify from any caching
+    {
+      urlPattern: /\/verify/,
+      handler: 'NetworkOnly'
     }
   ]
 })

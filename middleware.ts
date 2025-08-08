@@ -4,31 +4,35 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
+  // Always exclude these paths from auth protection to avoid blocking loops
+  const excludedPaths = [
+    '/verify',     // Email verification must always run client code
+    '/signup',     // Signup page
+    '/terms',      // Terms page
+    '/api',        // API routes
+    '/_next',      // Next.js internals
+    '/favicon.ico', // Favicon
+    '/manifest.json', // PWA manifest
+  ]
+  
+  // Check if current path should be excluded
+  const isExcludedPath = excludedPaths.some(path => pathname.startsWith(path))
+  
+  if (isExcludedPath) {
+    return NextResponse.next()
+  }
+  
   // Get auth and profile completion status from cookies
   const isAuthenticated = request.cookies.get('firebase-auth')?.value === 'true'
   const isProfileComplete = request.cookies.get('profile_complete')?.value === 'true'
   
-  // Public routes that don't require auth
-  const publicRoutes = ['/signup', '/verify', '/terms']
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-  
-  // If not authenticated and trying to access protected route
-  if (!isAuthenticated && !isPublicRoute) {
+  // If not authenticated, redirect to signup
+  if (!isAuthenticated) {
     return NextResponse.redirect(new URL('/signup', request.url))
   }
   
   // If authenticated but profile not complete and not on profile-setup
-  if (isAuthenticated && !isProfileComplete && !pathname.startsWith('/profile-setup') && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/profile-setup', request.url))
-  }
-  
-  // If authenticated and profile complete but trying to access auth pages
-  if (isAuthenticated && isProfileComplete && (pathname === '/signup' || pathname === '/verify')) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-  
-  // If authenticated but profile not complete and trying to access signup/verify
-  if (isAuthenticated && !isProfileComplete && (pathname === '/signup' || pathname === '/verify')) {
+  if (isAuthenticated && !isProfileComplete && !pathname.startsWith('/profile-setup')) {
     return NextResponse.redirect(new URL('/profile-setup', request.url))
   }
 

@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "dulif™ - Berkeley Student Marketplace",
+  title: "dulif - Berkeley Student Marketplace",
   description: "The trusted marketplace for UC Berkeley students to buy and sell items safely on campus.",
   keywords: "Berkeley, UC Berkeley, marketplace, students, buy, sell, textbooks, furniture",
   authors: [{ name: "DULIF Team" }],

@@ -139,9 +139,11 @@ export interface ListingCardProps {
 
 export interface StarsProps {
   rating: number
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   showCount?: boolean
   count?: number
+  interactive?: boolean
+  onRatingChange?: (rating: number) => void
 }
 
 export interface NavbarProps {

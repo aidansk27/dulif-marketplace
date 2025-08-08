@@ -18,6 +18,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Logo } from '@/components/ui/Logo'
+import { FiltersModal } from '@/components/FiltersModal'
 import { CATEGORIES } from '@/lib/constants'
 import type { NavbarProps, Category } from '@/lib/types'
 
@@ -25,6 +27,7 @@ export const Navbar = ({ user }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const { signOut } = useAuth()
   const router = useRouter()
@@ -49,21 +52,30 @@ export const Navbar = ({ user }: NavbarProps) => {
     router.push(`/?category=${encodeURIComponent(category)}`)
   }
 
+  const handleApplyFilters = (filters: any) => {
+    const searchParams = new URLSearchParams()
+    
+    if (filters.categories.length > 0) {
+      searchParams.set('categories', filters.categories.join(','))
+    }
+    
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 50) {
+      searchParams.set('minPrice', filters.priceRange[0].toString())
+      searchParams.set('maxPrice', filters.priceRange[1].toString())
+    }
+    
+    const query = searchParams.toString()
+    router.push(query ? `/?${query}` : '/')
+  }
+
   return (
     <nav className="berkeley-card sticky top-0 z-50 border-b border-primary/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center justify-start group">
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200 shadow-lg">
-                  <span className="text-white font-bold text-lg">D</span>
-                </div>
-                <span className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  dulif™
-                </span>
-              </div>
+            <Link href="/" className="flex items-center justify-start">
+              <Logo size="lg" variant="horizontal" />
             </Link>
           </div>
 
@@ -112,7 +124,7 @@ export const Navbar = ({ user }: NavbarProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => router.push('/?filters=open')}
+              onClick={() => setIsFiltersOpen(true)}
               className="hidden md:flex items-center"
             >
               <AdjustmentsHorizontalIcon className="w-4 h-4 mr-2" />
@@ -266,7 +278,7 @@ export const Navbar = ({ user }: NavbarProps) => {
               <Button
                 variant="outline"
                 onClick={() => {
-                  router.push('/?filters=open')
+                  setIsFiltersOpen(true)
                   setIsMobileMenuOpen(false)
                 }}
                 className="w-full mb-4"
@@ -286,6 +298,13 @@ export const Navbar = ({ user }: NavbarProps) => {
           onClick={() => setIsProfileMenuOpen(false)}
         />
       )}
+
+      {/* Filters Modal */}
+      <FiltersModal
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        onApplyFilters={handleApplyFilters}
+      />
     </nav>
   )
 }

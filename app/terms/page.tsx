@@ -16,7 +16,7 @@ export default function TermsPage() {
           <Link href="/" className="inline-flex items-center mb-6 text-white/80 hover:text-white">
             <Image
               src="/dulif-logo.png"
-              alt="dulif™"
+              alt="dulif"
               width={120}
               height={32}
               className="h-8 w-auto mr-4"

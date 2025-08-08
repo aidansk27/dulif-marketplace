@@ -48,6 +48,7 @@ export const CreateListingWizard = ({
     size: 'carry',
     weight: '',
   })
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -556,8 +557,7 @@ export const CreateListingWizard = ({
             </Button>
           ) : (
             <Button
-              onClick={handleSubmit}
-              loading={isSubmitting}
+              onClick={() => setShowConfirmation(true)}
               className="bg-secondary hover:bg-secondary/90 flex items-center"
             >
               <CheckIcon className="w-4 h-4 mr-2" />
@@ -566,6 +566,64 @@ export const CreateListingWizard = ({
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowConfirmation(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckIcon className="w-8 h-8 text-amber-600" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">
+                  Are you sure?
+                </h3>
+                <p className="text-muted text-sm leading-relaxed">
+                  You will not be able to edit your listing after it goes public. 
+                  Make sure all information is correct before publishing.
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowConfirmation(false)
+                    onStepChange(2) // Go back to pricing step as specified in user vision
+                  }}
+                  className="flex-1"
+                >
+                  Keep Editing
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowConfirmation(false)
+                    handleSubmit()
+                  }}
+                  loading={isSubmitting}
+                  className="flex-1 bg-secondary hover:bg-secondary/90"
+                >
+                  <CheckIcon className="w-4 h-4 mr-2" />
+                  Publish
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
